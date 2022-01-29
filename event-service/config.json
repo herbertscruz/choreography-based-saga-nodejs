@@ -13,6 +13,7 @@
         "order": "ORDER_SERVICE",
         "payment": "PAYMENT_SERVICE",
         "shipment": "SHIPMENT_SERVICE",
-        "stock": "STOCK_SERVICE"
+        "stock": "STOCK_SERVICE",
+        "stockReservation": "STOCK_RESERVATION_SERVICE"
     }
 }

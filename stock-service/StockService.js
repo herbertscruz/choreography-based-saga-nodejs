@@ -40,7 +40,7 @@ module.exports = class StockService {
                     }
                     const haveAllReservations = payload.metadata.reservations.every(e => e.hasStock);
                     payload.name = haveAllReservations ? 'reserved.stock' : 'product.unavailable';
-                    payload.service = 'stock.service';
+                    payload.service = 'stock.reservation.service';
                     isChanged = true;
                     break;
             }
