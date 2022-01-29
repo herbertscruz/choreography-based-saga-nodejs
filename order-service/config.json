@@ -1,0 +1,19 @@
+{
+    "rabbitmq": {
+        "url": "amqp://localhost"
+    },
+    "mongo": {
+        "url": "mongodb://root:example@localhost:27017/",
+        "dbName": "order"
+    },
+    "api": {
+        "port": 3000
+    },
+    "eventSourcing": {
+        "commandQueue": "COMMAND_EVENT_SERVICE",
+        "replayQueue": "REPLAY_EVENT_SERVICE"
+    },
+    "queues": {
+        "payment": "PAYMENT_SERVICE"
+    }
+}

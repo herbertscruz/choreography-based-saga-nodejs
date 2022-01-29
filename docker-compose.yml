@@ -1,0 +1,96 @@
+version: '3.1'
+
+services:
+
+  mongo-order:
+    extends:
+      file: ./order-service/docker-compose.yml
+      service: mongo
+    networks:
+      - network-order
+
+  mongo-express-order:
+    container_name: mongo-express-order
+    extends:
+      file: ./order-service/docker-compose.yml
+      service: mongo-express
+    networks:
+      - network-order
+
+  mongo-payment:
+    extends:
+      file: ./payment-service/docker-compose.yml
+      service: mongo
+    networks:
+      - network-payment
+
+  mongo-express-payment:
+    container_name: mongo-express-payment
+    extends:
+      file: ./payment-service/docker-compose.yml
+      service: mongo-express
+    networks:
+      - network-payment
+
+  mongo-shipment:
+    extends:
+      file: ./shipment-service/docker-compose.yml
+      service: mongo
+    networks:
+      - network-shipment
+
+  mongo-express-shipment:
+    container_name: mongo-express-shipment
+    extends:
+      file: ./shipment-service/docker-compose.yml
+      service: mongo-express
+    networks:
+      - network-shipment
+
+  mongo-stock:
+    extends:
+      file: ./stock-service/docker-compose.yml
+      service: mongo
+    networks:
+      - network-stock
+
+  mongo-express-stock:
+    container_name: mongo-express-stock
+    extends:
+      file: ./stock-service/docker-compose.yml
+      service: mongo-express
+    networks:
+      - network-stock
+
+  mongo-event:
+    extends:
+      file: ./event-service/docker-compose.yml
+      service: mongo
+    networks:
+      - network-event
+
+  mongo-express-event:
+    container_name: mongo-express-event
+    extends:
+      file: ./event-service/docker-compose.yml
+      service: mongo-express
+    networks:
+      - network-event
+
+  rabbitmq:
+    container_name: rabbitmq
+    hostname: rabbitmq
+    image: rabbitmq:3-management-alpine
+    ports:
+        - 5672:5672
+        - 15672:15672
+    networks:
+      - network-rabbitmq
+
+networks:
+  network-order: {}
+  network-payment: {}
+  network-shipment: {}
+  network-stock: {}
+  network-event: {}
+  network-rabbitmq: {}

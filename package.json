@@ -1,0 +1,32 @@
+{
+  "name": "choreography-based-saga-nodejs",
+  "version": "1.0.0",
+  "description": "Proof of concept for Choreography-based saga in NodeJS",
+  "main": "index.js",
+  "dependencies": {
+    "amqplib": "^0.8.0",
+    "body-parser": "^1.19.1",
+    "express": "^4.17.2",
+    "lodash": "^4.17.21",
+    "mongodb": "^4.3.1",
+    "uuid": "^8.3.2"
+  },
+  "devDependencies": {
+    "concurrently": "^7.0.0"
+  },
+  "scripts": {
+    "start:order": "node order-service/index.js",
+    "start:event": "node event-service/index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/herbertscruz/choreography-based-saga-nodejs.git"
+  },
+  "author": "Herberts Cruz <herbertscruz@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/herbertscruz/choreography-based-saga-nodejs/issues"
+  },
+  "homepage": "https://github.com/herbertscruz/choreography-based-saga-nodejs#readme"
+}
