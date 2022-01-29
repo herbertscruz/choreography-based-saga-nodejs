@@ -1,4 +1,6 @@
-const { pick } = require('lodash');
+const { omit } = require('lodash');
+const ShipmentStatus = require('./ShipmentStatus');
+const config = require('./config.json');
 
 module.exports = class ShipmentService {
 
@@ -8,24 +10,42 @@ module.exports = class ShipmentService {
     }
 
     async consumeStock(message) {
-        console.log(message);
-        this._channel.nack(message);
-        // try {
-        //     let payload = JSON.parse(message.content.toString());
+        try {
+            let payload = JSON.parse(message.content.toString());
+            let isChanged = false;
 
-        //     payload = pick(Object.assign({}, payload, {
-        //         createdAt: Date.now()
-        //     }), ['_id', 'uuid', 'name', 'service', 'metadata', 'createdAt']);
+            const withdrawal = JSON.parse(JSON.stringify(payload.metadata.withdrawal || '{}'));
+            payload = omit(Object.assign({}, payload, {
+                createdAt: Date.now()
+            }), ['_id', 'metadata.withdrawal']);
 
-        //     await this._db.collection('event_store').insertOne(payload);
-        
-        //     const handler = HandlerFactory.createInstance(payload.service, [this._channel]);
-        //     handler.send(payload);
+            switch(payload.name) {
+                case 'product.withdrawn':
+                    payload.name = 'ready.delivery';
+                    payload.service = 'shipment.service';
+                    isChanged = true;
+                    break;
+            }
 
-        //     this._channel.ack(message);
-        // } catch (err) {
-        //     console.log(err);
-        //     this._channel.nack(message, false, false);
-        // }
+            if (isChanged) {
+                const result = {
+                    orderId: withdrawal.orderId,
+                    status: ShipmentStatus.READY,
+                    createdAt: Date.now(),
+                    updatedAt: Date.now()
+                };
+                payload.metadata.delivery = result;
+
+                await this._db.collection('delivery').insertOne(result);
+                this._channel.sendToQueue(config.eventSourcing.queue, Buffer.from(JSON.stringify(payload)));
+
+                this._channel.ack(message);
+            } else {
+                this._channel.nack(message, false, false);
+            }
+        } catch (err) {
+            this._channel.nack(message, false, false);
+            throw err;
+        }
     }
 }

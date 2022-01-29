@@ -1,6 +1,6 @@
 process.stdin.resume();
 
-console.log('Starting stock handler...');
+console.log('Starting shipment handler...');
 console.log('--------------------------------------------------');
 
 const config = require('./config.json');
@@ -21,7 +21,7 @@ let mongoDBConnection;
     console.log('Open connection to MongoDB');
 
     // ---------------------------------------------------------------------------------
-    // --- Stock handler
+    // --- Shipment handler
     // ---------------------------------------------------------------------------------
     consumers(channel, db);
 })();
@@ -39,7 +39,7 @@ process.on('exit', function () {
         console.log('Closed connection to MongoDB');
     }
     console.log('--------------------------------------------------');
-    console.log('Stock handler stopped');
+    console.log('Shipment handler stopped');
 });
 process.on('SIGINT', process.exit);
 process.on('SIGUSR1', process.exit);

@@ -12,6 +12,6 @@ module.exports = function(channel, db) {
     };
 
     const orderService = new OrderService(channel, db);
-    consume(config.queues.stock, message => orderService.consumeStock(message));
+    consume(config.queues.stockReservation, message => orderService.consumeStockReservation(message));
     consume(config.queues.payment, message => orderService.consumePayment(message));
 }

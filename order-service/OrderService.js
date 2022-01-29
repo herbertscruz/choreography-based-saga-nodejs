@@ -36,9 +36,8 @@ module.exports = class OrderService {
         return payload;
     }
 
-    async consumeStock(message) {
-        console.log(message.content.toString());
-        //TODO: Cancel the order if any product is unavailable
+    async consumeStockReservation(message) {
+        console.log(message);
     }
 
     async consumePayment(message) {

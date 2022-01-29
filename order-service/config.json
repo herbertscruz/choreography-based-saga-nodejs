@@ -13,7 +13,7 @@
         "queue": "EVENT_SERVICE"
     },
     "queues": {
-        "stock": "STOCK_SERVICE",
+        "stockReservation": "STOCK_RESERVATION_SERVICE",
         "payment": "PAYMENT_SERVICE"
     }
 }
