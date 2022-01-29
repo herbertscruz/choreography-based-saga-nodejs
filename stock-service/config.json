@@ -1,0 +1,15 @@
+{
+    "rabbitmq": {
+        "url": "amqp://localhost"
+    },
+    "mongo": {
+        "url": "mongodb://root:example@localhost:27016/",
+        "dbName": "stock"
+    },
+    "eventSourcing": {
+        "queue": "EVENT_SERVICE"
+    },
+    "queues": {
+        "order": "ORDER_SERVICE"
+    }
+}

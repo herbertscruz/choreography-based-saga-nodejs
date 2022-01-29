@@ -16,6 +16,9 @@
   },
   "scripts": {
     "start:order": "node order-service/index.js",
+    "start:payment": "node payment-service/index.js",
+    "start:shipment": "node shipment-service/index.js",
+    "start:stock": "node stock-service/index.js",
     "start:event": "node event-service/index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },

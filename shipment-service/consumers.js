@@ -1,4 +1,4 @@
-const OrderService = require('./OrderService');
+const ShipmentService = require('./ShipmentService');
 const config = require('./config.json');
 
 module.exports = function(channel, db) {
@@ -11,7 +11,6 @@ module.exports = function(channel, db) {
         });
     };
 
-    const orderService = new OrderService(channel, db);
-    consume(config.queues.stock, message => orderService.consumeStock(message));
-    consume(config.queues.payment, message => orderService.consumePayment(message));
+    const shipmentService = new ShipmentService(channel, db);
+    consume(config.queues.stock, message => shipmentService.consumeStock(message));
 }

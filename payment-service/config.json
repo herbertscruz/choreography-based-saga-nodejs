@@ -3,17 +3,15 @@
         "url": "amqp://localhost"
     },
     "mongo": {
-        "url": "mongodb://root:example@localhost:27017/",
-        "dbName": "order"
+        "url": "mongodb://root:example@localhost:27018/",
+        "dbName": "payment"
     },
     "api": {
-        "port": 3000
+        "port": 3001
     },
     "eventSourcing": {
         "queue": "EVENT_SERVICE"
     },
     "queues": {
-        "stock": "STOCK_SERVICE",
-        "payment": "PAYMENT_SERVICE"
     }
 }

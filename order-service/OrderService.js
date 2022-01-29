@@ -14,7 +14,7 @@ module.exports = class OrderService {
 
         payload = pick(Object.assign({}, {
             items: [{
-                _id: ''
+                productId: ''
             }]
         }, payload, {
             status: OrderStatus.PENDING,
@@ -35,28 +35,33 @@ module.exports = class OrderService {
         return payload;
     }
 
+    async consumeStock(message) {
+        console.log(message.content.toString());
+        //TODO: Cancel the order if any product is unavailable
+    }
+
     async consumePayment(message) {
         try {
             const payload = JSON.parse(message.content.toString());
             const isChanged = false;
 
             switch(payload.name) {
-                case 'PaymentSuccess':
-                    payload.order.status = OrderStatus.APPROVED;
-                    payload.name = 'OrderApproved';
+                case 'payment.success':
+                    payload.metadata.order.status = OrderStatus.APPROVED;
+                    payload.name = 'order.approved';
                     payload.service = 'order.service';
                     isChanged = true;
                     break;
-                case 'PaymentFailed':       
-                    payload.order.status = OrderStatus.REJECTED;
-                    payload.name = 'OrderReject';
+                case 'payment.failed':       
+                    payload.metadata.order.status = OrderStatus.REJECTED;
+                    payload.name = 'order.rejected';
                     payload.service = 'order.service';
                     isChanged = true;
                     break;
             }
 
             if (eventName) {
-                await this._db.Order.update(payload.order, { where: { id: payload.metadata.order.id } });
+                await this._db.collection('order').update(payload.metadata.order, { where: { id: payload.metadata.order.id } });
                 this._channel.sendToQueue(config.eventSourcing.queue, Buffer.from(JSON.stringify(payload)));
 
                 this._channel.ack(message);
@@ -65,6 +70,7 @@ module.exports = class OrderService {
             }
         } catch (err) {
             this._channel.nack(message, false, false);
+            throw err;
         }
     }
 }
