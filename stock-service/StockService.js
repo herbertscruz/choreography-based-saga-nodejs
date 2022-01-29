@@ -43,6 +43,10 @@ module.exports = class StockService {
                     payload.service = 'stock.reservation.service';
                     isChanged = true;
                     break;
+                case 'order.approved':
+                    break;
+                case 'order.rejected':
+                    break;
             }
 
             if (isChanged) {

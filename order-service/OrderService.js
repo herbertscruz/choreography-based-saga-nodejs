@@ -1,7 +1,8 @@
 const { v4: uuidv4 } = require('uuid');
 const OrderStatus = require('./OrderStatus');
 const config = require('./config.json');
-const { pick } = require('lodash');
+const { pick, omit } = require('lodash');
+const ObjectId = require('mongodb').ObjectId;
 
 module.exports = class OrderService {
 
@@ -28,7 +29,7 @@ module.exports = class OrderService {
             uuid: uuidv4(),
             name: 'order.created',
             service: 'order.service',
-            metadata: {order: {...payload}}
+            metadata: { order: { ...payload } }
         };
         this._channel.sendToQueue(config.eventSourcing.queue, Buffer.from(JSON.stringify(result)));
 
@@ -42,26 +43,38 @@ module.exports = class OrderService {
 
     async consumePayment(message) {
         try {
-            const payload = JSON.parse(message.content.toString());
-            const isChanged = false;
+            let payload = JSON.parse(message.content.toString());
+            const payment = JSON.parse(JSON.stringify(payload.metadata.payment));
+            let isChanged = false;
 
-            switch(payload.name) {
+            const order = await this._db.collection('order').findOne({ _id: ObjectId(payment.orderId) });
+
+            payload = omit(Object.assign({}, payload, {
+                metadata: { order }
+            }), ['_id', 'payload.metadata.payment']);
+
+            switch (payload.name) {
                 case 'payment.success':
                     payload.metadata.order.status = OrderStatus.APPROVED;
+                    payload.metadata.order.updatedAt = Date.now();
                     payload.name = 'order.approved';
                     payload.service = 'order.service';
                     isChanged = true;
                     break;
-                case 'payment.failed':       
+                case 'payment.failed':
                     payload.metadata.order.status = OrderStatus.REJECTED;
+                    payload.metadata.order.updatedAt = Date.now();
                     payload.name = 'order.rejected';
                     payload.service = 'order.service';
                     isChanged = true;
                     break;
             }
 
-            if (eventName) {
-                await this._db.collection('order').update(payload.metadata.order, { where: { id: payload.metadata.order.id } });
+            if (isChanged) {
+                await this._db.collection('order').updateOne(
+                    { _id: payload.metadata.order._id },
+                    { $set: { ...omit(payload.metadata.order, ['_id', 'createdAt']) } }
+                );
                 this._channel.sendToQueue(config.eventSourcing.queue, Buffer.from(JSON.stringify(payload)));
 
                 this._channel.ack(message);

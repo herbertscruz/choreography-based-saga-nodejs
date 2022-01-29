@@ -1,5 +1,6 @@
 const { pick } = require('lodash');
 const PaymentStatus = require('./PaymentStatus');
+const config = require('./config.json');
 
 module.exports = class PaymentService {
 
@@ -10,14 +11,15 @@ module.exports = class PaymentService {
 
     async createPayment(payload) {
 
-        if (payload.orderId) throw new Error('orderId is required');
-        if (payload.customerId) throw new Error('orderId is required');
+        if (!payload.orderId) throw new Error('orderId is required');
+        if (!payload.customerId) throw new Error('customerId is required');
+        if (!payload.uuid) throw new Error('uuid is required');
 
         payload = pick(Object.assign({}, payload, {
             status: PaymentStatus.FAILED,
             reason: '',
             createdAt: Date.now()
-        }), ['orderId', 'customerId', 'status', 'createdAt']);
+        }), ['orderId', 'customerId', 'uuid', 'status', 'createdAt']);
 
         let eventName = 'payment.failed';
 
@@ -43,7 +45,7 @@ module.exports = class PaymentService {
         await this._db.collection('payment').insertOne(payload);
 
         const result = {
-            uuid: uuidv4(),
+            uuid: payload.uuid,
             name: eventName,
             service: 'payment.service',
             metadata: {payment: {...payload}}
