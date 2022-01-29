@@ -12,6 +12,5 @@ module.exports = function(channel, db) {
     };
 
     const eventService = new EventService(channel, db);
-    consume(config.eventSourcing.commandQueue, message => eventService.command(message));
-    consume(config.eventSourcing.replayQueue, message => eventService.replay(message));
+    consume(config.eventSourcing.queue, message => eventService.consumeEvent(message));
 }

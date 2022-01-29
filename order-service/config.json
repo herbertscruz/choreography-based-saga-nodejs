@@ -10,8 +10,7 @@
         "port": 3000
     },
     "eventSourcing": {
-        "commandQueue": "COMMAND_EVENT_SERVICE",
-        "replayQueue": "REPLAY_EVENT_SERVICE"
+        "queue": "EVENT_SERVICE"
     },
     "queues": {
         "payment": "PAYMENT_SERVICE"

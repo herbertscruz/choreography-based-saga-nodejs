@@ -1,4 +1,5 @@
 const HandlerFactory = require('./HandlerFactory');
+const { pick } = require('lodash');
 
 module.exports = class EventService {
 
@@ -7,32 +8,22 @@ module.exports = class EventService {
         this._db = db;
     }
 
-    async command(message) {
+    async consumeEvent(message) {
         try {
-            const payload = JSON.parse(message.content.toString());
+            let payload = JSON.parse(message.content.toString());
+
+            payload = pick(Object.assign({}, payload, {
+                createdAt: Date.now()
+            }), ['_id', 'uuid', 'name', 'service', 'metadata', 'createdAt']);
 
             await this._db.collection('event_store').insertOne(payload);
         
-            const handler = HandlerFactory.createInstance(payload.event.service, [this._channel]);
+            const handler = HandlerFactory.createInstance(payload.service, [this._channel]);
             handler.send(payload);
 
             this._channel.ack(message);
         } catch (err) {
-            this._channel.nack(message, false, false);
-        }
-    }
-
-    async replay(message) {
-        try {
-            const payload = JSON.parse(message.content.toString());
-
-            await this._db.collection('event_store').insertOne(payload);
-
-            const handler = HandlerFactory.createInstance(payload.event.service, [this._channel]);
-            handler.send(payload);
-
-            this._channel.ack(message);
-        } catch (err) {
+            console.log(err);
             this._channel.nack(message, false, false);
         }
     }

@@ -7,10 +7,10 @@ module.exports = class HandlerFactory {
 
     static createInstance(serviceName, args) {
         const factories = [
-            { serviceName: 'order-service', handler: OrderHandler },
-            { serviceName: 'payment-service', handler: PaymentHandler },
-            { serviceName: 'shipment-service', handler: ShipmentHandler },
-            { serviceName: 'stock-service', handler: StockHandler }
+            { serviceName: 'order.service', handler: OrderHandler },
+            { serviceName: 'payment.service', handler: PaymentHandler },
+            { serviceName: 'shipment.service', handler: ShipmentHandler },
+            { serviceName: 'stock.service', handler: StockHandler }
         ];
         const factory = factories.find(e => e.serviceName === serviceName);
         if (!factory) throw new Error(`${serviceName} handler not found`);
