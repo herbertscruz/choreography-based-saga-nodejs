@@ -1,12 +1,13 @@
-const OrderHandler = require('./OrderHandler');
-const PaymentHandler = require('./PaymentHandler');
-const ShipmentHandler = require('./ShipmentHandler');
-const StockHandler = require('./StockHandler');
-const StockReservationHandler = require('./StockReservationHandler');
+import { AbstractHandler } from "./AbstractHandler";
+import { OrderHandler } from "./OrderHandler";
+import { PaymentHandler } from "./PaymentHandler";
+import { ShipmentHandler } from "./ShipmentHandler";
+import { StockHandler } from "./StockHandler";
+import { StockReservationHandler } from "./StockReservationHandler";
 
-module.exports = class HandlerFactory {
+export class HandlerFactory {
 
-    static createInstance(serviceName, args) {
+    static createInstance(serviceName: string, args: any[]): AbstractHandler {
         const factories = [
             { serviceName: 'order.service', handler: OrderHandler },
             { serviceName: 'payment.service', handler: PaymentHandler },
@@ -16,6 +17,6 @@ module.exports = class HandlerFactory {
         ];
         const factory = factories.find(e => e.serviceName === serviceName);
         if (!factory) throw new Error(`${serviceName} handler not found`);
-        return new factory.handler(...args);
+        return new factory.handler(...args as [any]);
     }
 }
