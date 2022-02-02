@@ -15,7 +15,7 @@ export function routes(app: Express, channel: Channel, db: Db): void {
         try {
             console.log('Got body (/orders):', req.body);
             const order = await orderService.createPendingOrder(req.body);
-            res.status(200).json(order);
+            res.status(200).json(order.getData());
         } catch (err) {
             const error = err.message || err.toString();
             res.status(500).json({ error });

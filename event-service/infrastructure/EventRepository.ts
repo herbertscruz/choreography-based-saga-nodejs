@@ -1,10 +1,14 @@
+import { get, omit } from "lodash";
+import { IEventRepository } from "../application/IEventRepository";
 import { Event } from "../domain/Event"
 
-export class EventRepository {
+export class EventRepository implements IEventRepository {
 
     constructor(private db) {}
 
     async insert(event: Event):Promise<void> {
-        await this.db.collection('event_store').insertOne(event);
+        const result = await this.db.collection('event_store').insertOne(omit(event.getData(), ['id', '_id']));
+        event.id = get(result, 'insertedId');
     }
+
 }

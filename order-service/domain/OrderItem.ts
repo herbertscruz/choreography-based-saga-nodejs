@@ -1,15 +1,16 @@
 import { ObjectId } from 'mongodb';
 import { isString, get } from 'lodash';
+import { IDomain } from './IDomain';
 
-export class OrderItem {
+export class OrderItem implements IDomain {
+
     private _productId: ObjectId;
 
-    get productId() {
+    public get productId() {
         return this._productId;
     }
 
-    set productId(productId:string|ObjectId) {
-
+    public set productId(productId:string|ObjectId) {
         if (productId instanceof ObjectId) {
             this._productId = productId;
         } else if(isString(productId)) {
@@ -17,10 +18,14 @@ export class OrderItem {
         }
     }
 
-    toString(): string {
-        return JSON.stringify({
+    public toString(): string {
+        return JSON.stringify(this.getData());
+    }
+
+    public getData(): object {
+        return {
             productId: this.productId
-        });
+        };
     }
 
     static toEntity(object: object): OrderItem {
