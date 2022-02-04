@@ -1,7 +1,7 @@
 import { IEventHandler } from "../application/IEventHandler";
 import { HandlerFactory } from "./handler/HandlerFactory";
 import { Channel } from 'amqplib';
-import { Event } from "../domain/Event";
+import { Event } from "../../domain/Event";
 
 export class EventHandler implements IEventHandler {
 
@@ -9,7 +9,7 @@ export class EventHandler implements IEventHandler {
 
     send(event: Event): void {
         const handler = HandlerFactory.createInstance(event.service, [this.channel]);
-        handler.send(event);
+        handler.send(event.getData());
     }
 
     ack(message) {

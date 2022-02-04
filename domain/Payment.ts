@@ -68,13 +68,13 @@ export class Payment implements IDomain {
         };
     }
 
-    static toEntity(object: object): Payment {
+    public static toEntity(object: object): Payment {
         const entity = new Payment();
-        entity.orderId = get(object, 'orderId');
-        entity.customerId = get(object, 'customerId');
-        entity.status = get(object, 'status');
+        entity.orderId = get(object, 'orderId', get(object, '_orderId'));
+        entity.customerId = get(object, 'customerId', get(object, '_customerId'));
+        entity.status = get(object, 'status', get(object, '_status'));
         entity.reason = get(object, 'reason');
-        entity.createdAt = get(object, 'createdAt');
+        entity.createdAt = get(object, 'createdAt', get(object, '_createdAt'));
         return entity;
     }
 }

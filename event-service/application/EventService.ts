@@ -1,4 +1,4 @@
-import { Event } from "../domain/Event";
+import { Event } from "../../domain/Event";
 import { IEventHandler } from "./IEventHandler";
 import { IEventRepository } from "./IEventRepository";
 
@@ -10,6 +10,7 @@ export class EventService {
         try {
             const payload = JSON.parse(message.content.toString());
             const event = Event.toEntity(payload);
+            event.createdAt = Date.now();
 
             await this.repository.insert(event);
 

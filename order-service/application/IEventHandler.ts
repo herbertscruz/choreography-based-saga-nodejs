@@ -1,4 +1,4 @@
-import { Event } from "../domain/Event";
+import { Event } from "../../domain/Event";
 
 export interface IEventHandler {
     send(event: Event): void;

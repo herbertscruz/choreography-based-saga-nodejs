@@ -75,13 +75,13 @@ export class Order implements IDomain {
         if (isArray(items)) {
             entity.items = items.map(e => {
                 const subEntity = new OrderItem();
-                subEntity.productId = get(e, 'productId');
+                subEntity.productId = get(e, 'productId', get(object, '_productId'));
                 return subEntity;
             });
         }
-        entity.status = get(object, 'status');
-        entity.createdAt = get(object, 'createdAt');
-        entity.updatedAt = get(object, 'updatedAt');
+        entity.status = get(object, 'status', get(object, '_status'));
+        entity.createdAt = get(object, 'createdAt', get(object, '_createdAt'));
+        entity.updatedAt = get(object, 'updatedAt', get(object, '_updatedAt'));
         return entity;
     }
 }

@@ -1,7 +1,7 @@
 import { get, omit } from "lodash";
 import { ObjectId } from "mongodb";
 import { IOrderRepository } from "../application/IOrderRepository";
-import { Order } from "../domain/Order"
+import { Order } from "../../domain/Order"
 
 export class OrderRepository implements IOrderRepository {
 

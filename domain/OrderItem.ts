@@ -28,9 +28,9 @@ export class OrderItem implements IDomain {
         };
     }
 
-    static toEntity(object: object): OrderItem {
+    public static toEntity(object: object): OrderItem {
         const entity = new OrderItem();
-        entity.productId = get(object, 'productId');
+        entity.productId = get(object, 'productId', get(object, '_productId'));
         return entity;
     }
 }

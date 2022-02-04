@@ -6,16 +6,16 @@ export class Event implements IDomain {
 
     private _id: ObjectId;
     private _orderId: ObjectId;
-    name: string;
-    service: string;
-    metadata: object;
+    public name: string;
+    public service: string;
+    public metadata: object;
     private _createdAt: number;
 
-    get id() {
+    public get id() {
         return this._id;
     }
 
-    set id(id: string | ObjectId) {
+    public set id(id: string | ObjectId) {
         if (id instanceof ObjectId) {
             this._id = id;
         } else if (isString(id)) {
@@ -23,11 +23,11 @@ export class Event implements IDomain {
         }
     }
 
-    get orderId() {
+    public get orderId() {
         return this._orderId;
     }
 
-    set orderId(orderId: string | ObjectId) {
+    public set orderId(orderId: string | ObjectId) {
         if (orderId instanceof ObjectId) {
             this._orderId = orderId;
         } else if (isString(orderId)) {
@@ -35,11 +35,11 @@ export class Event implements IDomain {
         }
     }
 
-    get createdAt() {
+    public get createdAt() {
         return this._createdAt;
     }
 
-    set createdAt(createdAt: number) {
+    public set createdAt(createdAt: number) {
         const value = new Date(createdAt);
         if (value.getTime() > 0) {
             this._createdAt = createdAt;
@@ -68,7 +68,7 @@ export class Event implements IDomain {
         entity.name = get(object, 'name');
         entity.service = get(object, 'service');
         entity.metadata = get(object, 'metadata');
-        entity.createdAt = get(object, 'createdAt');
+        entity.createdAt = get(object, 'createdAt', get(object, '_createdAt'));
         return entity;
     }
 

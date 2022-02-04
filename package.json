@@ -21,12 +21,12 @@
   },
   "scripts": {
     "start:all": "concurrently --kill-others \"npm run start:order\" \"npm run start:payment\" \"npm run start:shipment\" \"npm run start:stock\" \"npm run start:event\"",
-    "start:order": "node order-service/index.js",
+    "start:order": "node dist/order-service/app.js",
     "start:payment": "node payment-service/index.js",
     "start:shipment": "node shipment-service/index.js",
-    "start:stock": "node stock-service/index.js",
+    "start:stock": "node dist/stock-service/app.js",
     "start:event": "node dist/event-service/app.js",
-    "start": "npm run compile && concurrently --kill-others \"node dist/order-service/app.js\" \"node dist/event-service/app.js\"",
+    "start": "npm run compile && concurrently --kill-others \"npm run start:order\" \"npm run start:event\" \"npm run start:stock\"",
     "compile": "tsc",
     "lint": "eslint . --ext .ts",
     "test": "echo \"Error: no test specified\" && exit 1"
