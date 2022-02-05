@@ -1,11 +1,9 @@
 import { ObjectId } from 'mongodb';
 import { isString, get, isNumber } from 'lodash';
 import { EPaymentStatus } from './EPaymentStatus';
-import { IDomain } from './IDomain';
-import Validator from 'validatorjs';
-import { ValidatorError } from './ValidatorError';
+import { AbstractDomain } from './AbstractDomain';
 
-export class Payment implements IDomain {
+export class Payment extends AbstractDomain {
 
     private _id: ObjectId;
     private _orderId: ObjectId;
@@ -69,10 +67,6 @@ export class Payment implements IDomain {
         }
     }
 
-    public toString(): string {
-        return JSON.stringify(this.getData());
-    }
-
     public getData(): object {
         return {
             id: this.id,
@@ -95,14 +89,4 @@ export class Payment implements IDomain {
         return entity;
     }
 
-    public validate(rules: object = {}): void {
-        const validation = new Validator(
-            this.getData(),
-            rules
-        );
-
-        if (validation.fails()) {
-            throw new ValidatorError(validation.errors);
-        }
-    }
 }

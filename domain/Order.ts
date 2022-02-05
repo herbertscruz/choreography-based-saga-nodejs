@@ -2,11 +2,9 @@ import { ObjectId } from 'mongodb';
 import { isString, get, isArray, isNumber } from 'lodash';
 import { OrderItem } from './OrderItem';
 import { EOrderStatus } from './EOrderStatus';
-import { IDomain } from './IDomain';
-import Validator from 'validatorjs';
-import { ValidatorError } from './ValidatorError';
+import { AbstractDomain } from './AbstractDomain';
 
-export class Order implements IDomain {
+export class Order extends AbstractDomain {
 
     private _id: ObjectId;
     public items: OrderItem[];
@@ -56,10 +54,6 @@ export class Order implements IDomain {
         }
     }
 
-    public toString(): string {
-        return JSON.stringify(this.getData());
-    }
-
     public getData(): object {
         return {
             id: this.id,
@@ -87,14 +81,4 @@ export class Order implements IDomain {
         return entity;
     }
 
-    public validate(rules: object = {}): void {
-        const validation = new Validator(
-            this.getData(),
-            rules
-        );
-
-        if (validation.fails()) {
-            throw new ValidatorError(validation.errors);
-        }
-    }
 }

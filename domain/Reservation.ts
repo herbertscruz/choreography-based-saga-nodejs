@@ -1,10 +1,8 @@
 import { ObjectId } from 'mongodb';
 import { isString, get } from 'lodash';
-import { IDomain } from './IDomain';
-import Validator from 'validatorjs';
-import { ValidatorError } from './ValidatorError';
+import { AbstractDomain } from './AbstractDomain';
 
-export class Reservation implements IDomain {
+export class Reservation extends AbstractDomain {
 
     private _id: ObjectId;
     private _orderId: ObjectId;
@@ -60,10 +58,6 @@ export class Reservation implements IDomain {
         }
     }
 
-    public toString(): string {
-        return JSON.stringify(this.getData());
-    }
-
     public getData(): object {
         return {
             id: this.id,
@@ -84,17 +78,6 @@ export class Reservation implements IDomain {
         entity.hasStock = Boolean(get(object, 'hasStock', ''));
         entity.createdAt = get(object, 'createdAt', get(object, '_createdAt'));
         return entity;
-    }
-
-    public validate(rules: object = {}): void {
-        const validation = new Validator(
-            this.getData(),
-            rules
-        );
-
-        if (validation.fails()) {
-            throw new ValidatorError(validation.errors);
-        }
     }
 
 }
