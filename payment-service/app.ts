@@ -3,24 +3,24 @@ process.stdin.resume();
 console.log('Starting payment handler...');
 console.log('--------------------------------------------------');
 
-const config = require('./config.json');
-const amqplib = require('amqplib');
-const MongoClient = require('mongodb').MongoClient;
-const express = require('express');
-const bodyParser = require('body-parser');
-const routes = require('./routes');
-const consumers = require('./consumers');
+import { rabbitmq, mongo, api }  from './config.json';
+import amqplib from 'amqplib';
+import { MongoClient, MongoClientOptions } from 'mongodb';
+import express from 'express';
+import bodyParser = require('body-parser');
+import { routes } from './routes';
 
 let rabbitMQConnection;
 let mongoDBConnection;
 
 (async () => {
-    rabbitMQConnection = await amqplib.connect(config.rabbitmq.url);
+    rabbitMQConnection = await amqplib.connect(rabbitmq.url);
     const channel = await rabbitMQConnection.createChannel();
     console.log('Open connection to RabbitMQ');
 
-    mongoDBConnection = await MongoClient.connect(config.mongo.url, { useNewUrlParser: true });
-    const db = mongoDBConnection.db(config.mongo.dbName);
+    const options = { useNewUrlParser: true } as MongoClientOptions;
+    mongoDBConnection = await MongoClient.connect(mongo.url, options);
+    const db = mongoDBConnection.db(mongo.dbName);
     console.log('Open connection to MongoDB');
 
     // ---------------------------------------------------------------------------------
@@ -32,12 +32,7 @@ let mongoDBConnection;
 
     routes(app, channel, db);
 
-    app.listen(config.api.port, () => console.log('Listen port %s', config.api.port));
-
-    // ---------------------------------------------------------------------------------
-    // --- Payment handler
-    // ---------------------------------------------------------------------------------
-    consumers(channel, db);
+    app.listen(api.port, () => console.log('Listen port %s', api.port));
 })();
 
 // ---------------------------------------------------------------------------------

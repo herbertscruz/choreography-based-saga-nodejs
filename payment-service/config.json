@@ -13,5 +13,6 @@
         "queue": "EVENT_SERVICE"
     },
     "queues": {
+        "order": "ORDER_SERVICE"
     }
 }

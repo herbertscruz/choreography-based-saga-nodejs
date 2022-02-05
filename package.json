@@ -8,7 +8,8 @@
     "body-parser": "^1.19.1",
     "express": "^4.17.2",
     "lodash": "^4.17.21",
-    "mongodb": "^4.3.1"
+    "mongodb": "^4.3.1",
+    "validatorjs": "^3.22.1"
   },
   "devDependencies": {
     "@types/express": "^4.17.2",
@@ -22,11 +23,11 @@
   "scripts": {
     "start:all": "concurrently --kill-others \"npm run start:order\" \"npm run start:payment\" \"npm run start:shipment\" \"npm run start:stock\" \"npm run start:event\"",
     "start:order": "node dist/order-service/app.js",
-    "start:payment": "node payment-service/index.js",
+    "start:payment": "node dist/payment-service/app.js",
     "start:shipment": "node shipment-service/index.js",
     "start:stock": "node dist/stock-service/app.js",
     "start:event": "node dist/event-service/app.js",
-    "start": "npm run compile && concurrently --kill-others \"npm run start:order\" \"npm run start:event\" \"npm run start:stock\"",
+    "start": "npm run compile && concurrently --kill-others \"npm run start:order\" \"npm run start:event\" \"npm run start:stock\" \"npm run start:payment\"",
     "compile": "tsc",
     "lint": "eslint . --ext .ts",
     "test": "echo \"Error: no test specified\" && exit 1"

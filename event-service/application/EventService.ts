@@ -10,6 +10,13 @@ export class EventService {
         try {
             const payload = JSON.parse(message.content.toString());
             const event = Event.toEntity(payload);
+
+            event.validate({
+                orderId: 'required',
+                name: 'required|max:40',
+                service: 'required|max:40'
+            });
+
             event.createdAt = Date.now();
 
             await this.repository.insert(event);

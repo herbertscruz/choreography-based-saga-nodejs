@@ -1,6 +1,8 @@
 import { ObjectId } from 'mongodb';
 import { isString, get } from 'lodash';
 import { IDomain } from './IDomain';
+import Validator from 'validatorjs';
+import { ValidatorError } from './ValidatorError';
 
 export class Event implements IDomain {
 
@@ -70,6 +72,17 @@ export class Event implements IDomain {
         entity.metadata = get(object, 'metadata');
         entity.createdAt = get(object, 'createdAt', get(object, '_createdAt'));
         return entity;
+    }
+
+    public validate(rules: object = {}): void {
+        const validation = new Validator(
+            this.getData(),
+            rules
+        );
+
+        if (validation.fails()) {
+            throw new ValidatorError(validation.errors);
+        }
     }
 
 }

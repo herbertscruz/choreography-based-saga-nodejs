@@ -15,7 +15,17 @@ export class ReservationService {
             const payload = JSON.parse(message.content.toString());
             let event = Event.toEntity(payload);
 
+            event.validate({
+                orderId: 'required',
+                name: 'required|max:40',
+                service: 'required|max:40'
+            });
+
             const order = Order.toEntity(get(event, 'metadata.order', {}));
+
+            order.validate({
+                'items.*.productId': 'required'
+            });
 
             switch (event.name) {
                 case 'order.created':

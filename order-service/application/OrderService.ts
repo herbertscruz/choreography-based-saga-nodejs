@@ -11,6 +11,11 @@ export class OrderService {
 
     async createPendingOrder(payload): Promise<Order> {
         const order = Order.toEntity(payload);
+
+        order.validate({
+            'items.*.productId': 'required'
+        });
+
         order.status = EOrderStatus.PENDING;
         order.createdAt = Date.now();
         order.updatedAt = Date.now();
@@ -34,6 +39,12 @@ export class OrderService {
             const payload = JSON.parse(message.content.toString());
             let event = Event.toEntity(payload);
 
+            event.validate({
+                orderId: 'required',
+                name: 'required|max:40',
+                service: 'required|max:40'
+            });
+
             switch (event.name) {
                 case 'product.unavailable':
                     event = await this.rejectOrder(event);
@@ -56,6 +67,12 @@ export class OrderService {
         try {
             const payload = JSON.parse(message.content.toString());
             let event = Event.toEntity(payload);
+
+            event.validate({
+                orderId: 'required',
+                name: 'required|max:40',
+                service: 'required|max:40'
+            });
 
             switch (event.name) {
                 case 'payment.success':

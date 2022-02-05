@@ -1,22 +1,22 @@
 import { Channel } from 'amqplib';
 import { Db } from 'mongodb';
-import { OrderService } from './application/OrderService';
-import { OrderRepository } from './infrastructure/OrderRepository';
 import { Express } from 'express';
 import { EventHandler } from './infrastructure/EventHandler';
+import { PaymentService } from './application/PaymentService';
 import { ValidatorError } from '../domain/ValidatorError';
+import { PaymentRepository } from './infrastructure/PaymentRepository';
 
 export function routes(app: Express, channel: Channel, db: Db): void {
 
     const eventHandler = new EventHandler(channel);
-    const orderRepository = new OrderRepository(db);
-    const orderService = new OrderService(eventHandler, orderRepository);
+    const paymentRepository = new PaymentRepository(db);
+    const paymentService = new PaymentService(eventHandler, paymentRepository);
 
-    app.post('/orders', async (req, res) => {
+    app.post('/payments', async (req, res) => {
         try {
-            console.log('Got body (/orders):', req.body);
-            const order = await orderService.createPendingOrder(req.body);
-            res.status(200).json(order.getData());
+            console.log('Got body (/payments):', req.body);
+            const payment = await paymentService.createPayment(req.body);
+            res.status(200).json(payment.getData());
         } catch (err) {
             if (err instanceof ValidatorError) {
                 res.status(422).json({ errors: err.errors });

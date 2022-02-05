@@ -2,14 +2,29 @@ import { ObjectId } from 'mongodb';
 import { isString, get, isNumber } from 'lodash';
 import { EPaymentStatus } from './EPaymentStatus';
 import { IDomain } from './IDomain';
+import Validator from 'validatorjs';
+import { ValidatorError } from './ValidatorError';
 
 export class Payment implements IDomain {
 
+    private _id: ObjectId;
     private _orderId: ObjectId;
     private _customerId: ObjectId;
     private _status: number;
     public reason: string;
     private _createdAt: number;
+
+    public get id() {
+        return this._id;
+    }
+
+    public set id(id: string | ObjectId) {
+        if (id instanceof ObjectId) {
+            this._id = id;
+        } else if (isString(id)) {
+            this._id = new ObjectId(id);
+        }
+    }
 
     public get orderId() {
         return this._orderId;
@@ -60,6 +75,7 @@ export class Payment implements IDomain {
 
     public getData(): object {
         return {
+            id: this.id,
             orderId: this.orderId,
             customerId: this.customerId,
             status: this.status,
@@ -70,11 +86,23 @@ export class Payment implements IDomain {
 
     public static toEntity(object: object): Payment {
         const entity = new Payment();
+        entity.id = get(object, 'id', get(object, '_id'));
         entity.orderId = get(object, 'orderId', get(object, '_orderId'));
         entity.customerId = get(object, 'customerId', get(object, '_customerId'));
         entity.status = get(object, 'status', get(object, '_status'));
         entity.reason = get(object, 'reason');
         entity.createdAt = get(object, 'createdAt', get(object, '_createdAt'));
         return entity;
+    }
+
+    public validate(rules: object = {}): void {
+        const validation = new Validator(
+            this.getData(),
+            rules
+        );
+
+        if (validation.fails()) {
+            throw new ValidatorError(validation.errors);
+        }
     }
 }

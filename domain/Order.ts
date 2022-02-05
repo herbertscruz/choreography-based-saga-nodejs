@@ -3,6 +3,8 @@ import { isString, get, isArray, isNumber } from 'lodash';
 import { OrderItem } from './OrderItem';
 import { EOrderStatus } from './EOrderStatus';
 import { IDomain } from './IDomain';
+import Validator from 'validatorjs';
+import { ValidatorError } from './ValidatorError';
 
 export class Order implements IDomain {
 
@@ -83,5 +85,16 @@ export class Order implements IDomain {
         entity.createdAt = get(object, 'createdAt', get(object, '_createdAt'));
         entity.updatedAt = get(object, 'updatedAt', get(object, '_updatedAt'));
         return entity;
+    }
+
+    public validate(rules: object = {}): void {
+        const validation = new Validator(
+            this.getData(),
+            rules
+        );
+
+        if (validation.fails()) {
+            throw new ValidatorError(validation.errors);
+        }
     }
 }
