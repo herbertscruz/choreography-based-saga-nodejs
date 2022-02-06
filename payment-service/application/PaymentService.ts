@@ -27,12 +27,13 @@ export class PaymentService {
         const hasStock = !!Math.floor(Math.random() * 2);
 
         if (hasStock) {
-            // TODO: Get value on purchase order by orderId in payload
-            const order = {value: Math.floor(Math.random() * 10) + 1};
-            // TODO: Get available limit of the customer by customerId in payload 
-            const availableLimit = Math.floor(Math.random() * 10) + 1;
+            // TODO: Get order items
+            // TODO: Get the total of the order items 
+            const total = Math.floor(Math.random() * 10) + 1;
+            // TODO: Get available balance of the customer by customerId in payload 
+            const account = {balance: Math.floor(Math.random() * 10) + 1};
 
-            if (order.value <= availableLimit) {
+            if (total <= account.balance) {
                 eventName = 'payment.success';
                 payment.status = EPaymentStatus.SUCCESS
             } else {
@@ -44,8 +45,12 @@ export class PaymentService {
 
         await this.repository.insert(payment);
 
+        if (eventName == 'payment.success') {
+            //TODO: Debit from balance
+        }
+
         const event = Event.toEntity({
-            orderId: payment.id,
+            orderId: payment.orderId,
             name: eventName,
             service: 'payment.service',
             metadata: {payment: {...payment.getData()}}

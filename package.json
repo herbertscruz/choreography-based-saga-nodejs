@@ -21,13 +21,12 @@
     "typescript": "^4.5.5"
   },
   "scripts": {
-    "start:all": "concurrently --kill-others \"npm run start:order\" \"npm run start:payment\" \"npm run start:shipment\" \"npm run start:stock\" \"npm run start:event\"",
+    "start": "npm run compile && concurrently --kill-others \"npm run start:event\" \"npm run start:order\" \"npm run start:payment\" \"npm run start:shipment\" \"npm run start:stock\"",
+    "start:event": "node dist/event-service/app.js",
     "start:order": "node dist/order-service/app.js",
     "start:payment": "node dist/payment-service/app.js",
-    "start:shipment": "node shipment-service/index.js",
+    "start:shipment": "node dist/shipment-service/app.js",
     "start:stock": "node dist/stock-service/app.js",
-    "start:event": "node dist/event-service/app.js",
-    "start": "npm run compile && concurrently --kill-others \"npm run start:order\" \"npm run start:event\" \"npm run start:stock\" \"npm run start:payment\"",
     "compile": "tsc",
     "lint": "eslint . --ext .ts",
     "test": "echo \"Error: no test specified\" && exit 1"

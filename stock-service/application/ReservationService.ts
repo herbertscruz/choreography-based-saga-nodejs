@@ -21,15 +21,9 @@ export class ReservationService {
                 service: 'required|max:40'
             });
 
-            const order = Order.toEntity(get(event, 'metadata.order', {}));
-
-            order.validate({
-                'items.*.productId': 'required'
-            });
-
             switch (event.name) {
                 case 'order.created':
-                    event = await this.makeReservation(event, order);
+                    event = await this.makeReservation(event);
                     break;
                 case 'order.approved':
                     event = await this.withdrawFromStock(event);
@@ -51,7 +45,13 @@ export class ReservationService {
         }
     }
 
-    async makeReservation(event: Event, order: Order): Promise<Event> {
+    async makeReservation(event: Event): Promise<Event> {
+        const order = Order.toEntity(get(event, 'metadata.order', {}));
+
+        order.validate({
+            'items.*.productId': 'required'
+        });
+
         const reservations = [];
         for(const item of order.items) {
             reservations.push(Reservation.toEntity({
@@ -80,8 +80,6 @@ export class ReservationService {
 
     async withdrawFromStock(event: Event): Promise<Event> {
         const reservations = await this.repository.findByOrder(event.orderId as ObjectId);
-        // TODO: Update product stock
-        await this.repository.deleteByOrder(event.orderId as ObjectId);
 
         return Event.toEntity({
             ...event.getData(), 
@@ -97,6 +95,47 @@ export class ReservationService {
         return Event.toEntity({
             ...event.getData(), 
             name: 'reservation.removed',
+            service: 'stock.service',
+            metadata: {}
+        });
+    }
+
+    async consumeShipment(message) {
+        try {
+            const payload = JSON.parse(message.content.toString());
+            let event = Event.toEntity(payload);
+
+            event.validate({
+                orderId: 'required',
+                name: 'required|max:40',
+                service: 'required|max:40'
+            });
+
+            switch (event.name) {
+                case 'registered.delivery':
+                    event = await this.updateProductStock(event);
+                    break;
+                default:
+                    this.handler.nack(message);
+                    return;
+            }
+
+            this.handler.send(event);
+
+            this.handler.ack(message);
+        } catch (err) {
+            this.handler.nack(message);
+            throw err;
+        }
+    }
+
+    async updateProductStock(event: Event): Promise<Event> {
+        // TODO: Update product stock
+        await this.repository.deleteByOrder(event.orderId as ObjectId);
+
+        return Event.toEntity({
+            ...event.getData(), 
+            name: 'updated.stock',
             service: 'stock.service',
             metadata: {}
         });

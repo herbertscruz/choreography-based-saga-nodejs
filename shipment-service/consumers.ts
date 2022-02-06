@@ -1,9 +1,9 @@
-import { ReservationService } from './application/ReservationService';
 import { queues } from './config.json';
 import { Channel } from 'amqplib';
 import { Db } from 'mongodb';
-import { ReservationRepository } from './infrastructure/ReservationRepository';
 import { EventHandler } from './infrastructure/EventHandler';
+import { DeliveryService } from './application/DeliveryService';
+import { DeliveryRepository } from './infrastructure/DeliveryRepository';
 
 export function consumers(channel: Channel, db: Db): void {
 
@@ -16,8 +16,7 @@ export function consumers(channel: Channel, db: Db): void {
     };
 
     const eventHandler = new EventHandler(channel);
-    const reservationRepository = new ReservationRepository(db);
-    const reservationService = new ReservationService(eventHandler, reservationRepository);
-    consume(queues.order, message => reservationService.consumeOrder(message));
-    consume(queues.shipment, message => reservationService.consumeShipment(message));
+    const deliveryRepository = new DeliveryRepository(db);
+    const deliveryService = new DeliveryService(eventHandler, deliveryRepository);
+    consume(queues.stock, message => deliveryService.consumeStock(message));
 }

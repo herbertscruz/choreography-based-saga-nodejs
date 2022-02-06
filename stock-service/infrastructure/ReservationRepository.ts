@@ -13,7 +13,7 @@ export class ReservationRepository implements IReservationRepository {
     }
 
     async findByOrder(orderId: ObjectId): Promise<Reservation[]> {
-        const result = await this.db.collection('reservation').find({orderId});
+        const result = await this.db.collection('reservation').find({orderId}).toArray();
         return result.map(e => Reservation.toEntity(e));
     }
 

@@ -10,6 +10,7 @@
         "queue": "EVENT_SERVICE"
     },
     "queues": {
-        "order": "ORDER_SERVICE"
+        "order": "ORDER_SERVICE",
+        "shipment": "SHIPMENT_SERVICE"
     }
 }
