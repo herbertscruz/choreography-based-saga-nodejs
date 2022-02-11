@@ -10,6 +10,10 @@ export class ReservationService {
     
     constructor(private handler: IEventHandler, private repository: IReservationRepository) {}
 
+    findByOrder(orderId: ObjectId): Promise<Reservation[]> {
+        return this.repository.findByOrder(orderId as ObjectId);
+    }
+
     async consumeOrder(message) {
         try {
             const payload = JSON.parse(message.content.toString());
@@ -57,7 +61,7 @@ export class ReservationService {
             reservations.push(Reservation.toEntity({
                 orderId: order.id,
                 productId: item.productId,
-                amount: 1,
+                quantity: 1,
                 // TODO: Check stock by productId in payload
                 hasStock: !!Math.floor(Math.random() * 2),
                 createdAt: Date.now()

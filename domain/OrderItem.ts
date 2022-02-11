@@ -5,6 +5,8 @@ import { AbstractDomain } from './AbstractDomain';
 export class OrderItem extends AbstractDomain {
 
     private _productId: ObjectId;
+    public unitPrice: number;
+    public quantity: number;
 
     public get productId() {
         return this._productId;
@@ -20,13 +22,17 @@ export class OrderItem extends AbstractDomain {
 
     public getData(): object {
         return {
-            productId: this.productId
+            productId: this.productId,
+            unitPrice: this.unitPrice,
+            quantity: this.quantity
         };
     }
 
     public static toEntity(object: object): OrderItem {
         const entity = new OrderItem();
         entity.productId = get(object, 'productId', get(object, '_productId'));
+        entity.unitPrice = get(object, 'unitPrice');
+        entity.quantity = get(object, 'quantity');
         return entity;
     }
 

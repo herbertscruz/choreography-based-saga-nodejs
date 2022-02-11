@@ -4,6 +4,7 @@ import { Channel } from 'amqplib';
 import { Db } from 'mongodb';
 import { OrderRepository } from './infrastructure/OrderRepository';
 import { EventHandler } from './infrastructure/EventHandler';
+import { OrderResource } from './application/OrderResource';
 
 export function consumers(channel: Channel, db: Db): void {
 
@@ -17,7 +18,8 @@ export function consumers(channel: Channel, db: Db): void {
 
     const eventHandler = new EventHandler(channel);
     const orderRepository = new OrderRepository(db);
-    const orderService = new OrderService(eventHandler, orderRepository);
-    consume(queues.stockReservation, message => orderService.consumeStockReservation(message));
-    consume(queues.payment, message => orderService.consumePayment(message));
+    const orderService = new OrderService(orderRepository);
+    const orderResource = new OrderResource(eventHandler, orderService);
+    consume(queues.stockReservation, message => orderResource.consumeStockReservation(message));
+    consume(queues.payment, message => orderResource.consumePayment(message));
 }

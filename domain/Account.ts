@@ -1,14 +1,12 @@
 import { ObjectId } from 'mongodb';
-import { isString, get, isArray, isNumber } from 'lodash';
-import { OrderItem } from './OrderItem';
-import { EOrderStatus } from './EOrderStatus';
+import { isString, get } from 'lodash';
 import { AbstractDomain } from './AbstractDomain';
 
-export class Order extends AbstractDomain {
+export class Account extends AbstractDomain {
 
     private _id: ObjectId;
-    public items: OrderItem[];
-    private _status: number;
+    private _customerId: ObjectId;
+    public balance: number;
     private _createdAt: number;
     private _updatedAt: number;
 
@@ -24,12 +22,16 @@ export class Order extends AbstractDomain {
         }
     }
 
-    public get status() {
-        return this._status;
+    public get customerId() {
+        return this._customerId;
     }
 
-    public set status(status: number) {
-        this._status = Object.values(EOrderStatus).filter(e => isNumber(e)).find(e => e === status) as EOrderStatus;
+    public set customerId(customerId: string | ObjectId) {
+        if (customerId instanceof ObjectId) {
+            this._customerId = customerId;
+        } else if (isString(customerId)) {
+            this._customerId = new ObjectId(customerId);
+        }
     }
 
     public get createdAt() {
@@ -57,21 +59,18 @@ export class Order extends AbstractDomain {
     public getData(): object {
         return {
             id: this.id,
-            items: this.items.map(e => e.getData()),
-            status: this.status,
+            customerId: this.customerId,
+            balance: this.balance,
             createdAt: this.createdAt,
-            updatedAt: this.updatedAt,
+            updatedAt: this.updatedAt
         }
     }
 
-    public static toEntity(object: object): Order {
-        const entity = new Order();
+    public static toEntity(object: object): Account {
+        const entity = new Account();
         entity.id = get(object, 'id', get(object, '_id'));
-        const items = get(object, 'items', []);
-        if (isArray(items)) {
-            entity.items = items.map(e => OrderItem.toEntity(e));
-        }
-        entity.status = get(object, 'status', get(object, '_status'));
+        entity.customerId = get(object, 'customerId', get(object, '_customerId'));
+        entity.balance = get(object, 'balance');
         entity.createdAt = get(object, 'createdAt', get(object, '_createdAt'));
         entity.updatedAt = get(object, 'updatedAt', get(object, '_updatedAt'));
         return entity;

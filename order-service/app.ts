@@ -7,7 +7,7 @@ import { rabbitmq, mongo, api }  from './config.json';
 import amqplib from 'amqplib';
 import { MongoClient, MongoClientOptions } from 'mongodb';
 import express from 'express';
-import bodyParser = require('body-parser');
+import bodyParser from 'body-parser';
 import { routes } from './routes';
 import { consumers } from './consumers';
 

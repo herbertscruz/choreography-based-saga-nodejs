@@ -4,6 +4,7 @@ import { Db } from 'mongodb';
 import { EventHandler } from './infrastructure/EventHandler';
 import { EventRepository } from './infrastructure/EventRepository';
 import { EventService } from './application/EventService';
+import { EventResource } from './application/EventResource';
 
 export function consumers(channel: Channel, db: Db): void {
 
@@ -17,6 +18,7 @@ export function consumers(channel: Channel, db: Db): void {
 
     const eventHandler = new EventHandler(channel);
     const eventRepository = new EventRepository(db);
-    const eventService = new EventService(eventHandler, eventRepository);
-    consume(eventSourcing.queue, message => eventService.consumeEvent(message));
+    const eventService = new EventService(eventRepository);
+    const eventResource = new EventResource(eventHandler, eventService);
+    consume(eventSourcing.queue, message => eventResource.consumeEvent(message));
 }

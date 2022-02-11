@@ -3,9 +3,12 @@ process.stdin.resume();
 console.log('Starting stock handler...');
 console.log('--------------------------------------------------');
 
-import { rabbitmq, mongo }  from './config.json';
+import { rabbitmq, mongo, api }  from './config.json';
 import amqplib from 'amqplib';
 import { MongoClient, MongoClientOptions } from 'mongodb';
+import express from 'express';
+import bodyParser = require('body-parser');
+import { routes } from './routes';
 import { consumers } from './consumers';
 
 let rabbitMQConnection;
@@ -20,6 +23,17 @@ let mongoDBConnection;
     mongoDBConnection = await MongoClient.connect(mongo.url, options);
     const db = mongoDBConnection.db(mongo.dbName);
     console.log('Open connection to MongoDB');
+
+    // ---------------------------------------------------------------------------------
+    // --- API
+    // ---------------------------------------------------------------------------------
+    const app = express();
+    app.use(bodyParser.urlencoded({ extended: false }));
+    app.use(bodyParser.json());
+
+    routes(app, channel, db);
+
+    app.listen(api.port, () => console.log('Listen port %s', api.port));
 
     // ---------------------------------------------------------------------------------
     // --- Stock handler

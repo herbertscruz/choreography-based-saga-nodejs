@@ -6,6 +6,9 @@
         "url": "mongodb://root:example@localhost:27016/",
         "dbName": "stock"
     },
+    "api": {
+        "port": 3004
+    },
     "eventSourcing": {
         "queue": "EVENT_SERVICE"
     },
