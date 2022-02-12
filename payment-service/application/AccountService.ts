@@ -13,7 +13,7 @@ export class AccountService {
     update(id: ObjectId, account: Account): Promise<void> {
         account.validate({
             customerId: 'required',
-            balance: 'required'
+            balance: 'required|min:0'
         });
         account.updatedAt = Date.now();
 

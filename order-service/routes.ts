@@ -6,12 +6,16 @@ import { Express } from 'express';
 import { EventHandler } from './infrastructure/EventHandler';
 import { errorHandler } from '../domain/ErrorHandler';
 import { OrderResource } from './application/OrderResource';
+import { AxiosHttpClient } from './infrastructure/AxiosHttpClient';
+import { ProductService } from './application/ProductService';
 
 export function routes(app: Express, channel: Channel, db: Db): void {
 
     const eventHandler = new EventHandler(channel);
     const orderRepository = new OrderRepository(db);
-    const orderService = new OrderService(orderRepository);
+    const httpClient = new AxiosHttpClient();
+    const productService = new ProductService(httpClient);
+    const orderService = new OrderService(orderRepository, productService);
     const orderResource = new OrderResource(eventHandler, orderService);
 
     app.post('/orders', async (req, res, next) => {

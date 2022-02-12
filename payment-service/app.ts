@@ -9,6 +9,7 @@ import { MongoClient, MongoClientOptions } from 'mongodb';
 import express from 'express';
 import bodyParser = require('body-parser');
 import { routes } from './routes';
+import { migrations } from './migrations';
 
 let rabbitMQConnection;
 let mongoDBConnection;
@@ -22,6 +23,11 @@ let mongoDBConnection;
     mongoDBConnection = await MongoClient.connect(mongo.url, options);
     const db = mongoDBConnection.db(mongo.dbName);
     console.log('Open connection to MongoDB');
+
+    // ---------------------------------------------------------------------------------
+    // --- Migrations
+    // ---------------------------------------------------------------------------------
+    await migrations(db);
 
     // ---------------------------------------------------------------------------------
     // --- API

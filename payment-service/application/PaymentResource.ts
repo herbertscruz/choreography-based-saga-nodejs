@@ -31,6 +31,7 @@ export class PaymentResource {
 
     async consumeOrder(message) {
         console.log(message);
+        // TODO: Pagamento precisa ser idemponte, tem que checar se já pagou antes
     }
 
     private sendPaymentEvent(payment: Payment, name: string, service: string): void {

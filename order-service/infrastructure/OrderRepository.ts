@@ -13,9 +13,9 @@ export class OrderRepository implements IOrderRepository {
     }
 
     async findById(id: ObjectId): Promise<Order> {
-        const order = await this.db.collection('order').findOne({ _id: id });
-        if (!order) return null;
-        return Order.toEntity(order);
+        const result = await this.db.collection('order').findOne({ _id: id });
+        if (!result) return null;
+        return Order.toEntity(result);
     }
 
     async update(id: ObjectId, order: Order): Promise<void> {

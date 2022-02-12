@@ -4,14 +4,19 @@ import { Event } from "../../domain/Event";
 import { Order } from "../../domain/Order";
 import { Reservation } from "../../domain/Reservation";
 import { IEventHandler } from "./IEventHandler";
+import { IProductRepository } from "./IProductRepository";
 import { IReservationRepository } from "./IReservationRepository";
 
 export class ReservationService {
-    
-    constructor(private handler: IEventHandler, private repository: IReservationRepository) {}
+
+    constructor(
+        private handler: IEventHandler,
+        private reservationRepository: IReservationRepository,
+        private productRepository: IProductRepository
+    ) { }
 
     findByOrder(orderId: ObjectId): Promise<Reservation[]> {
-        return this.repository.findByOrder(orderId as ObjectId);
+        return this.reservationRepository.findByOrder(orderId as ObjectId);
     }
 
     async consumeOrder(message) {
@@ -53,51 +58,57 @@ export class ReservationService {
         const order = Order.toEntity(get(event, 'metadata.order', {}));
 
         order.validate({
-            'items.*.productId': 'required'
+            'items.*.productId': 'required',
+            quantity: 'required|integer|min:1'
         });
 
+        const hasStock = [];
         const reservations = [];
-        for(const item of order.items) {
+
+        for (const item of order.items) {
+            const product = await this.productRepository.findById(item.productId as ObjectId);
+            const reservationsResult = await this.reservationRepository.findByProduct(item.productId as ObjectId);
+            const totalReserved = reservationsResult.reduce((result, item) => result + item.quantity, 0);
+
+            hasStock.push((product.quantity - totalReserved) >= 0);
             reservations.push(Reservation.toEntity({
                 orderId: order.id,
                 productId: item.productId,
-                quantity: 1,
-                // TODO: Check stock by productId in payload
-                hasStock: !!Math.floor(Math.random() * 2),
+                quantity: item.quantity,
                 createdAt: Date.now()
             }));
         }
 
-        const haveAllReservations = reservations.every(e => e.hasStock);
+        const haveAllReservations = hasStock.every(e => e);
 
         if (haveAllReservations) {
-            await Promise.all(reservations.map(e => this.repository.insert(e)));
+            await Promise.all(reservations.map(e => this.reservationRepository.insert(e)));
         }
 
         return Event.toEntity({
-            ...event.getData(), 
+            ...event.getData(),
             name: haveAllReservations ? 'reserved.stock' : 'product.unavailable',
             service: 'stock.reservation.service',
-            metadata: {reservations: reservations.map(e => e.getData())}
+            metadata: { reservations: reservations.map(e => e.getData()) }
         });
     }
 
     async withdrawFromStock(event: Event): Promise<Event> {
-        const reservations = await this.repository.findByOrder(event.orderId as ObjectId);
+        const reservations = await this.reservationRepository.findByOrder(event.orderId as ObjectId);
 
         return Event.toEntity({
-            ...event.getData(), 
+            ...event.getData(),
             name: 'product.withdrawn',
             service: 'stock.service',
-            metadata: {reservations: reservations.map(e => e.getData())}
+            metadata: { reservations: reservations.map(e => e.getData()) }
         });
     }
 
     async removeReservation(event: Event): Promise<Event> {
-        await this.repository.deleteByOrder(event.orderId as ObjectId);
+        await this.reservationRepository.deleteByOrder(event.orderId as ObjectId);
 
         return Event.toEntity({
-            ...event.getData(), 
+            ...event.getData(),
             name: 'reservation.removed',
             service: 'stock.service',
             metadata: {}
@@ -134,11 +145,19 @@ export class ReservationService {
     }
 
     async updateProductStock(event: Event): Promise<Event> {
-        // TODO: Update product stock
-        await this.repository.deleteByOrder(event.orderId as ObjectId);
+        const reservations = await this.reservationRepository.findByOrder(event.orderId as ObjectId);
+
+        for (const reservation of reservations) {
+            const product = await this.productRepository.findById(reservation.productId as ObjectId);
+            const quantity = product.quantity - reservation.quantity;
+            product.quantity = quantity;
+            await this.productRepository.update(product.id as ObjectId, product);
+        }
+
+        await this.reservationRepository.deleteByOrder(event.orderId as ObjectId);
 
         return Event.toEntity({
-            ...event.getData(), 
+            ...event.getData(),
             name: 'updated.stock',
             service: 'stock.service',
             metadata: {}

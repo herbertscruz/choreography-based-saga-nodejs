@@ -47,7 +47,7 @@ export class DeliveryService {
 
             reservation.validate({
                 '*.productId': 'required',
-                quantity: 'required|numeric'
+                quantity: 'required|integer|min:1'
             });
 
             return reservation;

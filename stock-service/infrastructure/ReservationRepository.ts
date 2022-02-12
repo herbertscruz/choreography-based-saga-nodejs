@@ -21,4 +21,9 @@ export class ReservationRepository implements IReservationRepository {
         this.db.collection('reservation').deleteMany({orderId});
     }
 
+    async findByProduct(productId: ObjectId): Promise<Reservation[]> {
+        const result = await this.db.collection('reservation').find({productId}).toArray();
+        return result.map(e => Reservation.toEntity(e));
+    }
+
 }

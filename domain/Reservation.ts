@@ -8,7 +8,6 @@ export class Reservation extends AbstractDomain {
     private _orderId: ObjectId;
     private _productId: ObjectId;
     public quantity: number;
-    public hasStock: boolean;
     private _createdAt: number;
 
     public get id() {
@@ -64,7 +63,6 @@ export class Reservation extends AbstractDomain {
             orderId: this.orderId,
             productId: this.productId,
             quantity: this.quantity,
-            hasStock: this.hasStock,
             createdAt: this.createdAt
         }
     }
@@ -75,7 +73,6 @@ export class Reservation extends AbstractDomain {
         entity.orderId = get(object, 'orderId', get(object, '_orderId'));
         entity.productId = get(object, 'productId', get(object, '_productId'));
         entity.quantity = get(object, 'quantity');
-        entity.hasStock = Boolean(get(object, 'hasStock', ''));
         entity.createdAt = get(object, 'createdAt', get(object, '_createdAt'));
         return entity;
     }
