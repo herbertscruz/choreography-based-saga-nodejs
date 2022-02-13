@@ -49,11 +49,11 @@ export class InvoiceService {
             status = EInvoiceStatus.FAILED;
             reason = 'Out of stock';
         } else {
-            const totalOrder = order.items.reduce((result, item) => result + (item.unitPrice * item.quantity), 0.0);
+            const totalOrder = order.items.reduce((result, item) => result + Number((item.unitPrice * item.quantity).toFixed(4)), 0.0);
     
             if (totalOrder <= account.balance) {
                 status = EInvoiceStatus.SUCCESS;
-                account.balance = account.balance - totalOrder;
+                account.balance = Number((account.balance - totalOrder).toFixed(4));
                 await this.accountService.update(account.id as ObjectId, account);
             } else {
                 status = EInvoiceStatus.FAILED;
