@@ -5,6 +5,8 @@ import { Db } from 'mongodb';
 import { ReservationRepository } from './infrastructure/ReservationRepository';
 import { EventHandler } from './infrastructure/EventHandler';
 import { ProductRepository } from './infrastructure/ProductRepository';
+import { StockResource } from './application/StockResource';
+import { ProductService } from './application/ProductService';
 
 export function consumers(channel: Channel, db: Db): void {
 
@@ -19,7 +21,9 @@ export function consumers(channel: Channel, db: Db): void {
     const eventHandler = new EventHandler(channel);
     const reservationRepository = new ReservationRepository(db);
     const productRepository = new ProductRepository(db);
-    const reservationService = new ReservationService(eventHandler, reservationRepository, productRepository);
-    consume(queues.order, message => reservationService.consumeOrder(message));
-    consume(queues.shipment, message => reservationService.consumeShipment(message));
+    const productService = new ProductService(productRepository);
+    const reservationService = new ReservationService(reservationRepository, productRepository);
+    const stockResource = new StockResource(eventHandler, reservationService, productService);
+    consume(queues.order, message => stockResource.consumeOrder(message));
+    consume(queues.shipment, message => stockResource.consumeShipment(message));
 }

@@ -1,3 +1,4 @@
+import { omit } from "lodash";
 import { ObjectId } from "mongodb";
 import { EOrderStatus } from "../../domain/EOrderStatus";
 import { Event } from "../../domain/Event";
@@ -14,7 +15,11 @@ export class OrderResource {
 
         order = await this.service.createWithPendingStatus(order);
 
-        this.sendOrderEvent(order, 'order.created', 'order.service');
+        const event = Event.toEntity({
+            orderId: order.id,
+        });
+
+        this.sendEvent(event, 'order.created', 'order.service', {order: order.getData()});
 
         return order;
     }
@@ -36,13 +41,14 @@ export class OrderResource {
             switch (event.name) {
                 case 'product.unavailable':
                     order = await this.service.updateStatus(event.orderId as ObjectId, EOrderStatus.REJECTED);
-                    this.sendOrderEvent(order, 'order.rejected', 'order.service');
-                    this.handler.ack(message);
+                    this.sendEvent(event, 'order.rejected', 'order.service', {order: order.getData()});
                     break;
                 default:
                     this.handler.nack(message);
-                    break;
+                    return;
             }
+
+            this.handler.ack(message);
         } catch (err) {
             this.handler.nack(message);
             throw err;
@@ -61,18 +67,18 @@ export class OrderResource {
             switch (event.name) {
                 case 'payment.success':
                     order = await this.service.updateStatus(event.orderId as ObjectId, EOrderStatus.APPROVED);
-                    this.sendOrderEvent(order, 'order.approved', 'order.service');
-                    this.handler.ack(message);
+                    this.sendEvent(event, 'order.approved', 'order.service', {order: order.getData()});
                     break;
                 case 'payment.failed':
                     order = await this.service.updateStatus(event.orderId as ObjectId, EOrderStatus.REJECTED);
-                    this.sendOrderEvent(order, 'order.rejected', 'order.service');
-                    this.handler.ack(message);
+                    this.sendEvent(event, 'order.rejected', 'order.service', {order: order.getData()});
                     break;
                 default:
                     this.handler.nack(message);
-                    break;
+                    return;
             }
+
+            this.handler.ack(message);
         } catch (err) {
             this.handler.nack(message);
             throw err;
@@ -87,12 +93,10 @@ export class OrderResource {
         });
     }
 
-    private sendOrderEvent(order: Order, name: string, service: string): void {
-        const event = Event.toEntity({
-            orderId: order.id,
-            name,
-            service,
-            metadata: {order: order.getData()}
+    private sendEvent(event: Event, name: string, service: string, metadata: object = {}): void {
+        event = Event.toEntity({
+            ...omit(event.getData(), 'createdAt'), 
+            name, service, metadata
         });
 
         this.handler.send(event);
