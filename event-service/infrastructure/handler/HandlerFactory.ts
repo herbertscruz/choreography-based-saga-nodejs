@@ -10,7 +10,7 @@ export class HandlerFactory {
     static createInstance(serviceName: string, args: any[]): AbstractHandler {
         const factories = [
             { serviceName: 'order.service', handler: OrderHandler },
-            { serviceName: 'payment.service', handler: PaymentHandler },
+            { serviceName: 'invoice.service', handler: PaymentHandler },
             { serviceName: 'shipment.service', handler: ShipmentHandler },
             { serviceName: 'stock.service', handler: StockHandler },
             { serviceName: 'stock.reservation.service', handler: StockReservationHandler }

@@ -39,7 +39,7 @@ export class StockResource {
                 case 'order.created':
                     order = Order.toEntity(get(event, 'metadata.order', {}));
                     reservations = await this.reservationService.makeReservation(order);
-                    name = isEmpty(reservations) ? 'reserved.stock' : 'product.unavailable';
+                    name = isEmpty(reservations) ? 'product.unavailable' : 'reserved.stock';
                     this.sendEvent(event, name, 'stock.reservation.service', { 
                         reservations: reservations.map(e => e.getData()) 
                     });
@@ -58,8 +58,6 @@ export class StockResource {
                     this.handler.nack(message);
                     return;
             }
-
-            this.handler.send(event);
 
             this.handler.ack(message);
         } catch (err) {
@@ -88,8 +86,6 @@ export class StockResource {
                     this.handler.nack(message);
                     return;
             }
-
-            this.handler.send(event);
 
             this.handler.ack(message);
         } catch (err) {

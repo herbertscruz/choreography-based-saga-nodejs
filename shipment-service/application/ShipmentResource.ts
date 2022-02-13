@@ -21,7 +21,6 @@ export class ShipmentResource {
                     reservations = get(event, 'metadata.reservations', []);
                     await this.deliveryService.insertAll(reservations);
                     this.sendEvent(event, 'registered.delivery', 'shipment.service');
-                    this.handler.send(event);
                     break;
                 default:
                     this.handler.nack(message);

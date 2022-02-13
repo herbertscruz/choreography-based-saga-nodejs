@@ -20,7 +20,7 @@ export class ReservationService {
         order.validate({
             items: 'array|min:1',
             'items.*.productId': 'required',
-            quantity: 'required|integer|min:1'
+            'items.*.quantity': 'required|integer|min:1'
         });
 
         let reservations = [];
@@ -30,7 +30,8 @@ export class ReservationService {
             const reservationsResult = await this.reservationRepository.findByProduct(item.productId as ObjectId);
             const totalReserved = reservationsResult.reduce((result, item) => result + item.quantity, 0);
 
-            const haveStock = (product.quantity - totalReserved) >= 0;
+            const haveStock = (product.quantity - totalReserved) > 0;
+
             if (!haveStock) {
                 reservations = [];
                 break;

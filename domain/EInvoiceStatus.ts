@@ -1,4 +1,4 @@
-export enum EPaymentStatus {
+export enum EInvoiceStatus {
     FAILED = 1,
     SUCCESS = 2
 }

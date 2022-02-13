@@ -1,6 +1,6 @@
 import { ObjectId } from 'mongodb';
 import { isString, get, isNumber } from 'lodash';
-import { EPaymentStatus } from './EPaymentStatus';
+import { EDeliveryStatus } from './EDeliveryStatus';
 import { AbstractDomain } from './AbstractDomain';
 
 export class Delivery extends AbstractDomain {
@@ -28,7 +28,7 @@ export class Delivery extends AbstractDomain {
     }
 
     public set status(status: number) {
-        this._status = Object.values(EPaymentStatus).filter(e => isNumber(e)).find(e => e === status) as EPaymentStatus;
+        this._status = Object.values(EDeliveryStatus).filter(e => isNumber(e)).find(e => e === status) as EDeliveryStatus;
     }
 
     public get createdAt() {

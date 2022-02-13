@@ -65,11 +65,11 @@ export class OrderResource {
             let order;
 
             switch (event.name) {
-                case 'payment.success':
+                case 'invoice.success':
                     order = await this.service.updateStatus(event.orderId as ObjectId, EOrderStatus.APPROVED);
                     this.sendEvent(event, 'order.approved', 'order.service', {order: order.getData()});
                     break;
-                case 'payment.failed':
+                case 'invoice.failed':
                     order = await this.service.updateStatus(event.orderId as ObjectId, EOrderStatus.REJECTED);
                     this.sendEvent(event, 'order.rejected', 'order.service', {order: order.getData()});
                     break;
