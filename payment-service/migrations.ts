@@ -25,7 +25,7 @@ export async function migrations(db: Db): Promise<void> {
 
     const account = new Account();
     account.customerId = customer.id;
-    account.balance = 150.50;
+    account.balance = 23.97;
     account.createdAt = Date.now();
     account.updatedAt = Date.now();
 
