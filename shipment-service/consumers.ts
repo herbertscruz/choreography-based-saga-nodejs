@@ -1,7 +1,7 @@
 import { queues } from './config.json';
 import { Channel } from 'amqplib';
 import { Db } from 'mongodb';
-import { EventHandler } from './infrastructure/EventHandler';
+import { EventHandler } from '../common/infrastructure/EventHandler';
 import { DeliveryService } from './application/DeliveryService';
 import { DeliveryRepository } from './infrastructure/DeliveryRepository';
 import { ShipmentResource } from './application/ShipmentResource';

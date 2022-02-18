@@ -9,11 +9,27 @@
     "api": {
         "port": 3000
     },
-    "eventSourcing": {
-        "queue": "EVENT_SERVICE"
-    },
+    "exchange": "ORDER_TOPIC",
     "queues": {
-        "stockReservation": "STOCK_RESERVATION_SERVICE",
-        "payment": "PAYMENT_SERVICE"
+        "stock": {
+            "name": "ORDER_STOCK_QUEUE",
+            "routingKey": ["stock.unreserved"],
+            "type": "queue"
+        },
+        "invoice": {
+            "name": "ORDER_INVOICE_QUEUE",
+            "routingKey": ["invoice.*"],
+            "type": "queue"
+        },
+        "event": {
+            "name": "EVENT_QUEUE",
+            "routingKey": ["#"],
+            "type": "queue"
+        },
+        "stockTopic": {
+            "name": "STOCK_TOPIC",
+            "routingKey": ["order.*"],
+            "type": "exchange"
+        }
     }
 }

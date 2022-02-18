@@ -1,8 +1,8 @@
-import { EInvoiceStatus } from "../../domain/EInvoiceStatus";
-import { Event } from "../../domain/Event";
-import { Invoice } from "../../domain/Invoice";
-import { ValidatorError } from "../../domain/ValidatorError";
-import { IEventHandler } from "./IEventHandler";
+import { EInvoiceStatus } from "../../common/domain/EInvoiceStatus";
+import { Event } from "../../common/domain/Event";
+import { Invoice } from "../../common/domain/Invoice";
+import { ValidatorError } from "../../common/domain/ValidatorError";
+import { IEventHandler } from "../../common/application/IEventHandler";
 import { InvoiceService } from "./InvoiceService";
 
 export class InvoiceResource {

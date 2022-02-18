@@ -1,5 +1,5 @@
 import { ObjectId } from "mongodb";
-import { Product } from "../../domain/Product";
+import { Product } from "../../common/domain/Product";
 
 export interface IProductRepository {
     insert(product: Product): Promise<void>;

@@ -1,6 +1,6 @@
 import { get, omit } from "lodash";
 import { ObjectId } from "mongodb";
-import { Account } from "../../domain/Account";
+import { Account } from "../../common/domain/Account";
 import { IAccountRepository } from "../application/IAccountRepository";
 
 export class AccountRepository implements IAccountRepository {

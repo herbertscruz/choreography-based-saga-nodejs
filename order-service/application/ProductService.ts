@@ -1,6 +1,6 @@
 import { ObjectId } from "mongodb";
-import { IHttpClient } from "./IHttpClient";
-import { Product } from '../../domain/Product';
+import { IHttpClient } from "../../common/application/IHttpClient";
+import { Product } from '../../common/domain/Product';
 
 export class ProductService {
     

@@ -1,6 +1,6 @@
 import { Db, ObjectId } from 'mongodb';
-import { Account } from '../domain/Account';
-import { Customer } from '../domain/Customer';
+import { Account } from '../common/domain/Account';
+import { Customer } from '../common/domain/Customer';
 import { AccountRepository } from './infrastructure/AccountRepository';
 import { CustomerRepository } from './infrastructure/CustomerRepository';
 

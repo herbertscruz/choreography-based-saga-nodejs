@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { URL } from 'url';
-import { AbstractDomain } from '../../domain/AbstractDomain';
+import { AbstractDomain } from '../../common/domain/AbstractDomain';
 import { IHttpClient } from '../application/IHttpClient';
 
 export class AxiosHttpClient<Type extends AbstractDomain> implements IHttpClient<Type> {

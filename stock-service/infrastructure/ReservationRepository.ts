@@ -1,7 +1,7 @@
 import { get, omit } from "lodash";
 import { ObjectId } from "mongodb";
 import { IReservationRepository } from "../application/IReservationRepository";
-import { Reservation } from "../../domain/Reservation"
+import { Reservation } from "../../common/domain/Reservation"
 
 export class ReservationRepository implements IReservationRepository {
 

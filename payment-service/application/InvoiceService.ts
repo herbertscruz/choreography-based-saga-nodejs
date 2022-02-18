@@ -1,8 +1,8 @@
 import { get, isEmpty } from "lodash";
 import { ObjectId } from "mongodb";
-import { EInvoiceStatus } from "../../domain/EInvoiceStatus";
-import { Invoice } from "../../domain/Invoice";
-import { ValidatorError } from "../../domain/ValidatorError";
+import { EInvoiceStatus } from "../../common/domain/EInvoiceStatus";
+import { Invoice } from "../../common/domain/Invoice";
+import { ValidatorError } from "../../common/domain/ValidatorError";
 import { AccountService } from "./AccountService";
 import { IInvoiceRepository } from "./IInvoiceRepository";
 import { OrderService } from "./OrderService";

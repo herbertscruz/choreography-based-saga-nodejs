@@ -1,7 +1,7 @@
-import { Delivery } from "../../domain/Delivery";
+import { Delivery } from "../../common/domain/Delivery";
 import { IDeliveryRepository } from "./IDeliveryRepository";
-import { Reservation } from "../../domain/Reservation";
-import { EDeliveryStatus } from "../../domain/EDeliveryStatus";
+import { Reservation } from "../../common/domain/Reservation";
+import { EDeliveryStatus } from "../../common/domain/EDeliveryStatus";
 import { omit } from "lodash";
 
 export class DeliveryService {

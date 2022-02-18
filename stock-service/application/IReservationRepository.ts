@@ -1,5 +1,5 @@
 import { ObjectId } from "mongodb";
-import { Reservation } from "../../domain/Reservation";
+import { Reservation } from "../../common/domain/Reservation";
 
 export interface IReservationRepository {
     insert(reservation: Reservation): Promise<void>;

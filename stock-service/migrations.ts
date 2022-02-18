@@ -1,5 +1,5 @@
 import { Db } from 'mongodb';
-import { Product } from '../domain/Product';
+import { Product } from '../common/domain/Product';
 import { ProductRepository } from './infrastructure/ProductRepository';
 
 export async function migrations(db: Db): Promise<void> {

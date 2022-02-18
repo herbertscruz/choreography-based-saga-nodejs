@@ -1,5 +1,5 @@
 import { ObjectId } from "mongodb";
-import { Order } from "../../domain/Order";
+import { Order } from "../../common/domain/Order";
 
 export interface IOrderRepository {
     insert(order: Order):Promise<void>;

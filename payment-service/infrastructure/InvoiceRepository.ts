@@ -1,8 +1,8 @@
 import { get, omit } from "lodash";
 import { IInvoiceRepository } from "../application/IInvoiceRepository";
-import { Invoice } from "../../domain/Invoice";
+import { Invoice } from "../../common/domain/Invoice";
 import { ObjectId } from "mongodb";
-import { EInvoiceStatus } from "../../domain/EInvoiceStatus";
+import { EInvoiceStatus } from "../../common/domain/EInvoiceStatus";
 
 export class InvoiceRepository implements IInvoiceRepository {
 

@@ -1,5 +1,5 @@
 import { ObjectId } from "mongodb";
-import { Invoice } from "../../domain/Invoice";
+import { Invoice } from "../../common/domain/Invoice";
 
 export interface IInvoiceRepository {
     insert(invoice: Invoice):Promise<void>;

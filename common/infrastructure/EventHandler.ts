@@ -1,7 +1,7 @@
 import { Channel } from 'amqplib';
 import { IEventHandler } from '../application/IEventHandler';
-import { eventSourcing } from '../config.json';
-import { Event } from '../../domain/Event';
+import { eventSourcing } from '../../shipment-service/config.json';
+import { Event } from '../domain/Event';
 
 export class EventHandler implements IEventHandler {
 

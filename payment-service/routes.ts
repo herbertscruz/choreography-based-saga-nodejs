@@ -1,15 +1,15 @@
 import { Channel } from 'amqplib';
 import { Db } from 'mongodb';
 import { Express } from 'express';
-import { EventHandler } from './infrastructure/EventHandler';
+import { EventHandler } from '../common/infrastructure/EventHandler';
 import { InvoiceService } from './application/InvoiceService';
-import { errorHandler } from '../domain/ErrorHandler';
+import { errorHandler } from '../common/domain/ErrorHandler';
 import { InvoiceRepository } from './infrastructure/InvoiceRepository';
 import { InvoiceResource } from './application/InvoiceResource';
 import { ReservationService } from './application/ReservationService';
 import { OrderService } from './application/OrderService';
 import { AccountService } from './application/AccountService';
-import { AxiosHttpClient } from './infrastructure/AxiosHttpClient';
+import { AxiosHttpClient } from '../common/infrastructure/AxiosHttpClient';
 import { AccountRepository } from './infrastructure/AccountRepository';
 
 export function routes(app: Express, channel: Channel, db: Db): void {

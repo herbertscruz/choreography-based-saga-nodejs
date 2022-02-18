@@ -3,20 +3,21 @@ import { Db } from 'mongodb';
 import { OrderService } from './application/OrderService';
 import { OrderRepository } from './infrastructure/OrderRepository';
 import { Express } from 'express';
-import { EventHandler } from './infrastructure/EventHandler';
-import { errorHandler } from '../domain/ErrorHandler';
+import { errorHandler } from '../common/domain/ErrorHandler';
 import { OrderResource } from './application/OrderResource';
-import { AxiosHttpClient } from './infrastructure/AxiosHttpClient';
+import { AxiosHttpClient } from '../common/infrastructure/AxiosHttpClient';
 import { ProductService } from './application/ProductService';
+import { exchange } from './config.json';
+import { Handler } from '../common/infrastructure/Handler';
 
 export function routes(app: Express, channel: Channel, db: Db): void {
 
-    const eventHandler = new EventHandler(channel);
-    const orderRepository = new OrderRepository(db);
+    const handler = new Handler(channel, exchange);
     const httpClient = new AxiosHttpClient();
+    const orderRepository = new OrderRepository(db);
     const productService = new ProductService(httpClient);
     const orderService = new OrderService(orderRepository, productService);
-    const orderResource = new OrderResource(eventHandler, orderService);
+    const orderResource = new OrderResource(handler, orderService);
 
     app.post('/orders', async (req, res, next) => {
         try {

@@ -1,6 +1,6 @@
 import { get, omit } from "lodash";
 import { IDeliveryRepository } from "../application/IDeliveryRepository";
-import { Delivery } from "../../domain/Delivery";
+import { Delivery } from "../../common/domain/Delivery";
 
 export class DeliveryRepository implements IDeliveryRepository {
 

@@ -1,4 +1,4 @@
-import { Event } from "../../domain/Event";
+import { Event } from "../../common/domain/Event";
 import { IEventRepository } from "./IEventRepository";
 
 export class EventService {

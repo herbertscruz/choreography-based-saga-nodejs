@@ -1,87 +1,67 @@
 import { omit } from "lodash";
 import { ObjectId } from "mongodb";
-import { EOrderStatus } from "../../domain/EOrderStatus";
-import { Event } from "../../domain/Event";
-import { Order } from "../../domain/Order";
-import { IEventHandler } from "./IEventHandler";
+import { EOrderStatus } from "../../common/domain/EOrderStatus";
+import { Event } from "../../common/domain/Event";
+import { Order } from "../../common/domain/Order";
 import { OrderService } from "./OrderService";
+import { IHandler } from "../../common/application/IHandler";
 
 export class OrderResource {
     
-    constructor(private handler: IEventHandler, private service: OrderService) {}
+    constructor(private handler: IHandler, private orderService: OrderService) {}
 
     public async createPendingOrder(payload): Promise<Order> {
         let order = Order.toEntity(payload);
 
-        order = await this.service.createWithPendingStatus(order);
+        order = await this.orderService.createWithPendingStatus(order);
 
         const event = Event.toEntity({
             orderId: order.id,
         });
 
-        this.sendEvent(event, 'order.created', 'order.service', {order: order.getData()});
+        this.sendEvent(event, 'order.created', {order: order.getData()});
 
         return order;
     }
 
     public findById(params): Promise<Order> {
         const id = new ObjectId(params.id);
-        return this.service.findById(id);
+        return this.orderService.findById(id);
     }
 
-    public async consumeStockReservation(message) {
-        try {
-            const payload = JSON.parse(message.content.toString());
-            const event = Event.toEntity(payload);
+    public async consumeStock(message) {
+        const payload = JSON.parse(message.content.toString());
+        const event = Event.toEntity(payload);
 
-            this.validateEvent(event);
+        this.validateEvent(event);
 
-            let order;
+        let order;
 
-            switch (event.name) {
-                case 'product.unavailable':
-                    order = await this.service.updateStatus(event.orderId as ObjectId, EOrderStatus.REJECTED);
-                    this.sendEvent(event, 'order.rejected', 'order.service', {order: order.getData()});
-                    break;
-                default:
-                    this.handler.nack(message);
-                    return;
-            }
-
-            this.handler.ack(message);
-        } catch (err) {
-            this.handler.nack(message);
-            throw err;
+        switch (event.name) {
+            case 'unreserved.stock':
+                order = await this.orderService.updateStatus(event.orderId as ObjectId, EOrderStatus.REJECTED);
+                this.sendEvent(event, 'order.rejected', {order: order.getData()});
+                break;
         }
     }
 
-    public async consumePayment(message) {
-        try {
-            const payload = JSON.parse(message.content.toString());
-            const event = Event.toEntity(payload);
+    public async consumeInvoice(message) {
+        const payload = JSON.parse(message.content.toString());
+        const event = Event.toEntity(payload);
 
-            this.validateEvent(event);
+        this.validateEvent(event);
 
-            let order;
+        let order;
 
-            switch (event.name) {
-                case 'invoice.success':
-                    order = await this.service.updateStatus(event.orderId as ObjectId, EOrderStatus.APPROVED);
-                    this.sendEvent(event, 'order.approved', 'order.service', {order: order.getData()});
-                    break;
-                case 'invoice.failed':
-                    order = await this.service.updateStatus(event.orderId as ObjectId, EOrderStatus.REJECTED);
-                    this.sendEvent(event, 'order.rejected', 'order.service', {order: order.getData()});
-                    break;
-                default:
-                    this.handler.nack(message);
-                    return;
-            }
-
-            this.handler.ack(message);
-        } catch (err) {
-            this.handler.nack(message);
-            throw err;
+        switch (event.name) {
+            case 'invoice.success':
+                order = await this.orderService.updateStatus(event.orderId as ObjectId, EOrderStatus.APPROVED);
+                this.sendEvent(event, 'order.approved', {order: order.getData()});
+                break;
+            case 'invoice.failed':
+                order = await this.orderService.updateStatus(event.orderId as ObjectId, EOrderStatus.REJECTED);
+                this.sendEvent(event, 'order.rejected', {order: order.getData()});
+                break;
         }
     }
 
@@ -93,12 +73,12 @@ export class OrderResource {
         });
     }
 
-    private sendEvent(event: Event, name: string, service: string, metadata: object = {}): void {
+    private sendEvent(event: Event, routingKey: string, metadata: object = {}): void {
         event = Event.toEntity({
             ...omit(event.getData(), 'createdAt'), 
-            name, service, metadata
+            name: routingKey, service: 'order.service', metadata
         });
 
-        this.handler.send(event);
+        this.handler.publish(event, routingKey);
     }
 }

@@ -1,17 +1,17 @@
 import { get, isEmpty, omit } from "lodash";
 import { ObjectId } from "mongodb";
-import { Event } from "../../domain/Event";
-import { Order } from "../../domain/Order";
-import { Product } from "../../domain/Product";
-import { Reservation } from "../../domain/Reservation";
-import { IEventHandler } from "./IEventHandler";
+import { Event } from "../../common/domain/Event";
+import { Order } from "../../common/domain/Order";
+import { Product } from "../../common/domain/Product";
+import { Reservation } from "../../common/domain/Reservation";
+import { IHandler } from "../../common/application/IHandler";
 import { ProductService } from "./ProductService";
 import { ReservationService } from "./ReservationService";
 
 export class StockResource {
 
     constructor(
-        private handler: IEventHandler, 
+        private handler: IHandler, 
         private reservationService: ReservationService, 
         private productService: ProductService
     ) {}
@@ -25,72 +25,52 @@ export class StockResource {
     }
 
     async consumeOrder(message) {
-        try {
-            const payload = JSON.parse(message.content.toString());
-            const event = Event.toEntity(payload);
+        const payload = JSON.parse(message.content.toString());
+        const event = Event.toEntity(payload);
 
-            this.validateEvent(event);
+        this.validateEvent(event);
 
-            let order;
-            let reservations;
-            let name;
+        let order;
+        let reservations;
+        let name;
 
-            switch (event.name) {
-                case 'order.created':
-                    order = Order.toEntity(get(event, 'metadata.order', {}));
-                    reservations = await this.reservationService.makeReservation(order);
-                    name = isEmpty(reservations) ? 'product.unavailable' : 'reserved.stock';
-                    this.sendEvent(event, name, 'stock.reservation.service', { 
-                        reservations: reservations.map(e => e.getData()) 
-                    });
-                    break;
-                case 'order.approved':
-                    reservations = await this.reservationService.findByOrder(event.orderId as ObjectId);
-                    this.sendEvent(event, 'product.withdrawn', 'stock.service', { 
-                        reservations: reservations.map(e => e.getData()) 
-                    });
-                    break;
-                case 'order.rejected':
-                    await this.reservationService.deleteByOrder(event.orderId as ObjectId);
-                    this.sendEvent(event, 'reservation.removed', 'stock.service');
-                    break;
-                default:
-                    this.handler.nack(message);
-                    return;
-            }
-
-            this.handler.ack(message);
-        } catch (err) {
-            this.handler.nack(message);
-            throw err;
+        switch (event.name) {
+            case 'order.created':
+                order = Order.toEntity(get(event, 'metadata.order', {}));
+                reservations = await this.reservationService.makeReservation(order);
+                name = isEmpty(reservations) ? 'stock.unreserved' : 'stock.reserved';
+                this.sendEvent(event, name, { 
+                    reservations: reservations.map(e => e.getData()) 
+                });
+                break;
+            case 'order.approved':
+                reservations = await this.reservationService.findByOrder(event.orderId as ObjectId);
+                this.sendEvent(event, 'stock.withdrawn', { 
+                    reservations: reservations.map(e => e.getData()) 
+                });
+                break;
+            case 'order.rejected':
+                await this.reservationService.deleteByOrder(event.orderId as ObjectId);
+                this.sendEvent(event, 'stock.removed');
+                break;
         }
     }
 
     async consumeShipment(message) {
-        try {
-            const payload = JSON.parse(message.content.toString());
-            const event = Event.toEntity(payload);
+        const payload = JSON.parse(message.content.toString());
+        const event = Event.toEntity(payload);
 
-            event.validate({
-                orderId: 'required',
-                name: 'required|max:40',
-                service: 'required|max:40'
-            });
+        event.validate({
+            orderId: 'required',
+            name: 'required|max:40',
+            service: 'required|max:40'
+        });
 
-            switch (event.name) {
-                case 'registered.delivery':
-                    await this.reservationService.updateProductStockByOrder(event.orderId as ObjectId);
-                    this.sendEvent(event, 'updated.stock', 'stock.service');
-                    break;
-                default:
-                    this.handler.nack(message);
-                    return;
-            }
-
-            this.handler.ack(message);
-        } catch (err) {
-            this.handler.nack(message);
-            throw err;
+        switch (event.name) {
+            case 'shipment.registered':
+                await this.reservationService.updateProductStockByOrder(event.orderId as ObjectId);
+                this.sendEvent(event, 'updated.stock');
+                break;
         }
     }
 
@@ -102,13 +82,13 @@ export class StockResource {
         });
     }
 
-    private sendEvent(event: Event, name: string, service: string, metadata: object = {}): void {
+    private sendEvent(event: Event, routingKey: string, metadata: object = {}): void {
         event = Event.toEntity({
             ...omit(event.getData(), 'createdAt'), 
-            name, service, metadata
+            name: routingKey, service: 'stock.service', metadata
         });
 
-        this.handler.send(event);
+        this.handler.publish(event, routingKey);
     }
 
 }

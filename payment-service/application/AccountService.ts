@@ -1,5 +1,5 @@
 import { ObjectId } from "mongodb";
-import { Account } from '../../domain/Account';
+import { Account } from '../../common/domain/Account';
 import { IAccountRepository } from "./IAccountRepository";
 
 export class AccountService {

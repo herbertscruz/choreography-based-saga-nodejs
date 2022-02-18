@@ -1,7 +1,7 @@
 import { get, omit } from "lodash";
-import { Event } from "../../domain/Event";
+import { Event } from "../../common/domain/Event";
 import { DeliveryService } from "./DeliveryService";
-import { IEventHandler } from "./IEventHandler";
+import { IEventHandler } from "../../common/application/IEventHandler";
 
 export class ShipmentResource {
 
@@ -17,10 +17,10 @@ export class ShipmentResource {
             let reservations;
             
             switch (event.name) {
-                case 'product.withdrawn':
+                case 'stock.withdrawn':
                     reservations = get(event, 'metadata.reservations', []);
                     await this.deliveryService.insertAll(reservations);
-                    this.sendEvent(event, 'registered.delivery', 'shipment.service');
+                    this.sendEvent(event, 'shipment.registered', 'shipment.service');
                     break;
                 default:
                     this.handler.nack(message);

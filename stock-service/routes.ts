@@ -1,23 +1,24 @@
 import { Channel } from 'amqplib';
 import { Db, ObjectId } from 'mongodb';
 import { Express } from 'express';
-import { EventHandler } from './infrastructure/EventHandler';
-import { errorHandler } from '../domain/ErrorHandler';
+import { Handler } from '../common/infrastructure/Handler';
+import { errorHandler } from '../common/domain/ErrorHandler';
 import { ReservationRepository } from './infrastructure/ReservationRepository';
 import { ReservationService } from './application/ReservationService';
 import { get } from 'lodash';
 import { ProductRepository } from './infrastructure/ProductRepository';
 import { ProductService } from './application/ProductService';
 import { StockResource } from './application/StockResource';
+import { exchange } from './config.json';
 
 export function routes(app: Express, channel: Channel, db: Db): void {
 
-    const eventHandler = new EventHandler(channel);
+    const handler = new Handler(channel, exchange);
     const reservationRepository = new ReservationRepository(db);
     const productRepository = new ProductRepository(db);
     const productService = new ProductService(productRepository);
     const reservationService = new ReservationService(reservationRepository, productRepository);
-    const stockResource = new StockResource(eventHandler, reservationService, productService);
+    const stockResource = new StockResource(handler, reservationService, productService);
 
     app.get('/reservations', async (req, res, next) => {
         try {

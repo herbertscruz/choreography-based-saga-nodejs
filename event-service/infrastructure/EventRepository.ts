@@ -1,6 +1,6 @@
 import { get, omit } from "lodash";
 import { IEventRepository } from "../application/IEventRepository";
-import { Event } from "../../domain/Event"
+import { Event } from "../../common/domain/Event"
 
 export class EventRepository implements IEventRepository {
 

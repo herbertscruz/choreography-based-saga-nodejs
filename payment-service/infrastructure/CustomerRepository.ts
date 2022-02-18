@@ -1,5 +1,5 @@
 import { get, omit } from "lodash";
-import { Customer } from "../../domain/Customer";
+import { Customer } from "../../common/domain/Customer";
 import { ICustomerRepository } from "../application/ICustomerRepository";
 
 export class CustomerRepository implements ICustomerRepository {

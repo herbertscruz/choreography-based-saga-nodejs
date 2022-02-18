@@ -6,14 +6,10 @@
         "url": "mongodb://root:example@localhost:27015/",
         "dbName": "event"
     },
-    "eventSourcing": {
-        "queue": "EVENT_SERVICE"
-    },
     "queues": {
-        "order": "ORDER_SERVICE",
-        "payment": "PAYMENT_SERVICE",
-        "shipment": "SHIPMENT_SERVICE",
-        "stock": "STOCK_SERVICE",
-        "stockReservation": "STOCK_RESERVATION_SERVICE"
+        "event": {
+            "name": "EVENT_QUEUE",
+            "routingKey": ["#"]
+        }
     }
 }

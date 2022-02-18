@@ -9,11 +9,27 @@
     "api": {
         "port": 3004
     },
-    "eventSourcing": {
-        "queue": "EVENT_SERVICE"
-    },
+    "exchange": "STOCK_TOPIC",
     "queues": {
-        "order": "ORDER_SERVICE",
-        "shipment": "SHIPMENT_SERVICE"
+        "order": {
+            "name": "STOCK_ORDER_QUEUE",
+            "routingKey": ["order.*"],
+            "type": "queue"
+        },
+        "shipment": {
+            "name": "STOCK_SHIPMENT_QUEUE",
+            "routingKey": ["shipment.registered"],
+            "type": "queue"
+        },
+        "event": {
+            "name": "EVENT_QUEUE",
+            "routingKey": ["#"],
+            "type": "queue"
+        },
+        "orderTopic": {
+            "name": "ORDER_TOPIC",
+            "routingKey": ["stock.unreserved"],
+            "type": "exchange"
+        }
     }
 }

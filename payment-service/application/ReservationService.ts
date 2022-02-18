@@ -1,6 +1,6 @@
 import { ObjectId } from "mongodb";
-import { IHttpClient } from "./IHttpClient";
-import { Reservation } from '../../domain/Reservation';
+import { IHttpClient } from "../../common/application/IHttpClient";
+import { Reservation } from '../../common/domain/Reservation';
 import { isArray } from "lodash";
 
 export class ReservationService {

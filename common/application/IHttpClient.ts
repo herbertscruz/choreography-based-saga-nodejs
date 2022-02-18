@@ -1,4 +1,4 @@
-import { AbstractDomain } from '../../domain/AbstractDomain'
+import { AbstractDomain } from '../domain/AbstractDomain'
 
 export interface IHttpClient<Type extends AbstractDomain> {
     get(url: URL);

@@ -1,7 +1,7 @@
-import { Order } from "../../domain/Order";
+import { Order } from "../../common/domain/Order";
 import { IOrderRepository } from "./IOrderRepository";
 import { ObjectId } from "mongodb";
-import { EOrderStatus } from "../../domain/EOrderStatus";
+import { EOrderStatus } from "../../common/domain/EOrderStatus";
 import { ProductService } from "./ProductService";
 
 export class OrderService {

@@ -1,7 +1,7 @@
 import { isEmpty } from "lodash";
 import { ObjectId } from "mongodb";
-import { Order } from "../../domain/Order";
-import { Reservation } from "../../domain/Reservation";
+import { Order } from "../../common/domain/Order";
+import { Reservation } from "../../common/domain/Reservation";
 import { IProductRepository } from "./IProductRepository";
 import { IReservationRepository } from "./IReservationRepository";
 
