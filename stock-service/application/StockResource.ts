@@ -1,4 +1,4 @@
-import { get, isEmpty, omit } from "lodash";
+import { get, isEmpty } from "lodash";
 import { ObjectId } from "mongodb";
 import { Event } from "../../common/domain/Event";
 import { Order } from "../../common/domain/Order";
@@ -7,14 +7,17 @@ import { Reservation } from "../../common/domain/Reservation";
 import { IHandler } from "../../common/application/IHandler";
 import { ProductService } from "./ProductService";
 import { ReservationService } from "./ReservationService";
+import { AbstractResource } from '../../common/application/AbstractResource';
 
-export class StockResource {
+export class StockResource extends AbstractResource {
 
     constructor(
-        private handler: IHandler, 
-        private reservationService: ReservationService, 
+        protected handler: IHandler,
+        private reservationService: ReservationService,
         private productService: ProductService
-    ) {}
+    ) {
+        super(handler);
+    }
 
     findReservationByOrder(orderId: ObjectId): Promise<Reservation[]> {
         return this.reservationService.findByOrder(orderId as ObjectId);
@@ -32,21 +35,21 @@ export class StockResource {
 
         let order;
         let reservations;
-        let name;
+        let routingKey;
 
-        switch (event.name) {
+        switch (event.routingKey) {
             case 'order.created':
                 order = Order.toEntity(get(event, 'metadata.order', {}));
                 reservations = await this.reservationService.makeReservation(order);
-                name = isEmpty(reservations) ? 'stock.unreserved' : 'stock.reserved';
-                this.sendEvent(event, name, { 
-                    reservations: reservations.map(e => e.getData()) 
+                routingKey = isEmpty(reservations) ? 'stock.unreserved' : 'stock.reserved';
+                this.sendEvent(event, routingKey, {
+                    reservations: reservations.map(e => e.getData())
                 });
                 break;
             case 'order.approved':
                 reservations = await this.reservationService.findByOrder(event.orderId as ObjectId);
-                this.sendEvent(event, 'stock.withdrawn', { 
-                    reservations: reservations.map(e => e.getData()) 
+                this.sendEvent(event, 'stock.withdrawn', {
+                    reservations: reservations.map(e => e.getData())
                 });
                 break;
             case 'order.rejected':
@@ -60,35 +63,14 @@ export class StockResource {
         const payload = JSON.parse(message.content.toString());
         const event = Event.toEntity(payload);
 
-        event.validate({
-            orderId: 'required',
-            name: 'required|max:40',
-            service: 'required|max:40'
-        });
+        this.validateEvent(event);
 
-        switch (event.name) {
+        switch (event.routingKey) {
             case 'shipment.registered':
                 await this.reservationService.updateProductStockByOrder(event.orderId as ObjectId);
-                this.sendEvent(event, 'updated.stock');
+                this.sendEvent(event, 'stock.updated');
                 break;
         }
-    }
-
-    private validateEvent(event: Event): void {
-        event.validate({
-            orderId: 'required',
-            name: 'required|max:40',
-            service: 'required|max:40'
-        });
-    }
-
-    private sendEvent(event: Event, routingKey: string, metadata: object = {}): void {
-        event = Event.toEntity({
-            ...omit(event.getData(), 'createdAt'), 
-            name: routingKey, service: 'stock.service', metadata
-        });
-
-        this.handler.publish(event, routingKey);
     }
 
 }

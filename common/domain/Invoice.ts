@@ -29,10 +29,10 @@ export class Invoice extends AbstractDomain {
         return this._accountId;
     }
 
-    public set accountId(accountId:string|ObjectId) {
+    public set accountId(accountId: string | ObjectId) {
         if (accountId instanceof ObjectId) {
             this._accountId = accountId;
-        } else if(isString(accountId)) {
+        } else if (isString(accountId)) {
             this._accountId = new ObjectId(accountId);
         }
     }

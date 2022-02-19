@@ -7,7 +7,7 @@ export class ValidatorError extends Error {
         this._errors = errors;
     }
 
-    public get errors () {
+    public get errors() {
         return this._errors;
     }
 }

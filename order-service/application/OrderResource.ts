@@ -1,14 +1,16 @@
-import { omit } from "lodash";
 import { ObjectId } from "mongodb";
 import { EOrderStatus } from "../../common/domain/EOrderStatus";
 import { Event } from "../../common/domain/Event";
 import { Order } from "../../common/domain/Order";
 import { OrderService } from "./OrderService";
 import { IHandler } from "../../common/application/IHandler";
+import { AbstractResource } from '../../common/application/AbstractResource';
 
-export class OrderResource {
-    
-    constructor(private handler: IHandler, private orderService: OrderService) {}
+export class OrderResource extends AbstractResource {
+
+    constructor(protected handler: IHandler, private orderService: OrderService) {
+        super(handler);
+    }
 
     public async createPendingOrder(payload): Promise<Order> {
         let order = Order.toEntity(payload);
@@ -19,7 +21,7 @@ export class OrderResource {
             orderId: order.id,
         });
 
-        this.sendEvent(event, 'order.created', {order: order.getData()});
+        this.sendEvent(event, 'order.created', { order: order.getData() });
 
         return order;
     }
@@ -37,10 +39,10 @@ export class OrderResource {
 
         let order;
 
-        switch (event.name) {
-            case 'unreserved.stock':
+        switch (event.routingKey) {
+            case 'stock.unreserved':
                 order = await this.orderService.updateStatus(event.orderId as ObjectId, EOrderStatus.REJECTED);
-                this.sendEvent(event, 'order.rejected', {order: order.getData()});
+                this.sendEvent(event, 'order.rejected', { order: order.getData() });
                 break;
         }
     }
@@ -53,32 +55,16 @@ export class OrderResource {
 
         let order;
 
-        switch (event.name) {
+        switch (event.routingKey) {
             case 'invoice.success':
                 order = await this.orderService.updateStatus(event.orderId as ObjectId, EOrderStatus.APPROVED);
-                this.sendEvent(event, 'order.approved', {order: order.getData()});
+                this.sendEvent(event, 'order.approved', { order: order.getData() });
                 break;
             case 'invoice.failed':
                 order = await this.orderService.updateStatus(event.orderId as ObjectId, EOrderStatus.REJECTED);
-                this.sendEvent(event, 'order.rejected', {order: order.getData()});
+                this.sendEvent(event, 'order.rejected', { order: order.getData() });
                 break;
         }
     }
 
-    private validateEvent(event: Event): void {
-        event.validate({
-            orderId: 'required',
-            name: 'required|max:40',
-            service: 'required|max:40'
-        });
-    }
-
-    private sendEvent(event: Event, routingKey: string, metadata: object = {}): void {
-        event = Event.toEntity({
-            ...omit(event.getData(), 'createdAt'), 
-            name: routingKey, service: 'order.service', metadata
-        });
-
-        this.handler.publish(event, routingKey);
-    }
 }

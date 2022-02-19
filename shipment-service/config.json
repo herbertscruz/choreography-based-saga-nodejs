@@ -6,10 +6,28 @@
         "url": "mongodb://root:example@localhost:27019/",
         "dbName": "shipment"
     },
-    "eventSourcing": {
-        "queue": "EVENT_SERVICE"
-    },
+    "exchange": "SHIPMENT_TOPIC",
     "queues": {
-        "stock": "STOCK_SERVICE"
+        "stock": {
+            "name": "SHIPMENT_STOCK_QUEUE",
+            "routingKey": [
+                "stock.withdrawn"
+            ],
+            "type": "queue"
+        },
+        "event": {
+            "name": "EVENT_QUEUE",
+            "routingKey": [
+                "#"
+            ],
+            "type": "queue"
+        },
+        "stockTopic": {
+            "name": "STOCK_TOPIC",
+            "routingKey": [
+                "shipment.registered"
+            ],
+            "type": "exchange"
+        }
     }
 }

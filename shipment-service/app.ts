@@ -3,7 +3,7 @@ process.stdin.resume();
 console.log('Starting shipment handler...');
 console.log('--------------------------------------------------');
 
-import { rabbitmq, mongo }  from './config.json';
+import { rabbitmq, mongo } from './config.json';
 import amqplib from 'amqplib';
 import { MongoClient, MongoClientOptions } from 'mongodb';
 import { consumers } from './consumers';
@@ -24,7 +24,7 @@ let mongoDBConnection;
     // ---------------------------------------------------------------------------------
     // --- Shipment handler
     // ---------------------------------------------------------------------------------
-    consumers(channel, db);
+    await consumers(channel, db);
 })();
 
 // ---------------------------------------------------------------------------------

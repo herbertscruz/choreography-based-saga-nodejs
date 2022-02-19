@@ -13,22 +13,37 @@
     "queues": {
         "order": {
             "name": "STOCK_ORDER_QUEUE",
-            "routingKey": ["order.*"],
+            "routingKey": [
+                "order.*"
+            ],
             "type": "queue"
         },
         "shipment": {
             "name": "STOCK_SHIPMENT_QUEUE",
-            "routingKey": ["shipment.registered"],
+            "routingKey": [
+                "shipment.registered"
+            ],
             "type": "queue"
         },
         "event": {
             "name": "EVENT_QUEUE",
-            "routingKey": ["#"],
+            "routingKey": [
+                "#"
+            ],
             "type": "queue"
         },
         "orderTopic": {
             "name": "ORDER_TOPIC",
-            "routingKey": ["stock.unreserved"],
+            "routingKey": [
+                "stock.unreserved"
+            ],
+            "type": "exchange"
+        },
+        "shipmentTopic": {
+            "name": "SHIPMENT_TOPIC",
+            "routingKey": [
+                "stock.withdrawn"
+            ],
             "type": "exchange"
         }
     }

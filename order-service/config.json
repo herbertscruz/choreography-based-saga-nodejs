@@ -13,22 +13,30 @@
     "queues": {
         "stock": {
             "name": "ORDER_STOCK_QUEUE",
-            "routingKey": ["stock.unreserved"],
+            "routingKey": [
+                "stock.unreserved"
+            ],
             "type": "queue"
         },
         "invoice": {
             "name": "ORDER_INVOICE_QUEUE",
-            "routingKey": ["invoice.*"],
+            "routingKey": [
+                "invoice.*"
+            ],
             "type": "queue"
         },
         "event": {
             "name": "EVENT_QUEUE",
-            "routingKey": ["#"],
+            "routingKey": [
+                "#"
+            ],
             "type": "queue"
         },
         "stockTopic": {
             "name": "STOCK_TOPIC",
-            "routingKey": ["order.*"],
+            "routingKey": [
+                "order.*"
+            ],
             "type": "exchange"
         }
     }

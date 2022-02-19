@@ -3,8 +3,10 @@ import { Account } from '../../common/domain/Account';
 import { IAccountRepository } from "./IAccountRepository";
 
 export class AccountService {
-    
-    constructor(private repository: IAccountRepository) {}
+
+    constructor(
+        private repository: IAccountRepository
+    ) { }
 
     findByCustomer(customerId: ObjectId): Promise<Account> {
         return this.repository.findByCustomer(customerId);

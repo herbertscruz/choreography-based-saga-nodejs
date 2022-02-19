@@ -6,4 +6,4 @@ export interface IReservationRepository {
     findByOrder(orderId: ObjectId): Promise<Reservation[]>;
     deleteByOrder(orderId: ObjectId): Promise<void>;
     findByProduct(productId: ObjectId): Promise<Reservation[]>;
-} 
+}

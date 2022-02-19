@@ -1,45 +1,36 @@
 import { EInvoiceStatus } from "../../common/domain/EInvoiceStatus";
 import { Event } from "../../common/domain/Event";
-import { Invoice } from "../../common/domain/Invoice";
 import { ValidatorError } from "../../common/domain/ValidatorError";
-import { IEventHandler } from "../../common/application/IEventHandler";
+import { IHandler } from "../../common/application/IHandler";
 import { InvoiceService } from "./InvoiceService";
+import { AbstractResource } from '../../common/application/AbstractResource';
 
-export class InvoiceResource {
+export class InvoiceResource extends AbstractResource {
 
     constructor(
-        private handler: IEventHandler,
+        protected handler: IHandler,
         private invoiceService: InvoiceService
-    ) { }
+    ) {
+        super(handler);
+    }
 
     async createInvoice(payload) {
         const invoice = await this.invoiceService.makePayment(payload);
 
+        const event = Event.toEntity({
+            orderId: invoice.order.id,
+        });
+
         if (invoice.status === EInvoiceStatus.FAILED) {
-            this.sendInvoiceEvent(invoice, 'invoice.failed', 'invoice.service');
+            this.sendEvent(event, 'invoice.failed', { invoice: invoice.getData() });
             throw new ValidatorError({
                 reason: invoice.reason
             });
         }
 
-        this.sendInvoiceEvent(invoice, 'invoice.success', 'invoice.service');
+        this.sendEvent(event, 'invoice.success', { invoice: invoice.getData() });
 
         return invoice;
     }
 
-    async consumeOrder(message) {
-        console.log(message);
-        // TODO: Pagamento precisa ser idemponte, tem que checar se já pagou antes
-    }
-
-    private sendInvoiceEvent(invoice: Invoice, name: string, service: string): void {
-        const event = Event.toEntity({
-            orderId: invoice.order.id,
-            name,
-            service,
-            metadata: { invoice: invoice.getData() }
-        });
-
-        this.handler.send(event);
-    }
 }

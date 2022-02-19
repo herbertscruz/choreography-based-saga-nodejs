@@ -30,7 +30,7 @@ export async function consumers(channel: Channel, db: Db): Promise<void> {
     await consume(queues.invoice.name, message => orderResource.consumeInvoice(message));
 
     await channel.assertExchange(exchange, 'topic', { durable: false });
-    
+
     Object.values(queues).forEach(async queue => {
         if (get(queue, 'type') === 'exchange') {
             await channel.assertExchange(get(queue, 'name'), 'topic', { durable: false });

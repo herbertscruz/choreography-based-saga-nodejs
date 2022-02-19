@@ -38,10 +38,10 @@ export class Reservation extends AbstractDomain {
         return this._productId;
     }
 
-    public set productId(productId:string|ObjectId) {
+    public set productId(productId: string | ObjectId) {
         if (productId instanceof ObjectId) {
             this._productId = productId;
-        } else if(isString(productId)) {
+        } else if (isString(productId)) {
             this._productId = new ObjectId(productId);
         }
     }

@@ -9,10 +9,21 @@
     "api": {
         "port": 3001
     },
-    "eventSourcing": {
-        "queue": "EVENT_SERVICE"
-    },
+    "exchange": "PAYMENT_TOPIC",
     "queues": {
-        "order": "ORDER_SERVICE"
+        "event": {
+            "name": "EVENT_QUEUE",
+            "routingKey": [
+                "#"
+            ],
+            "type": "queue"
+        },
+        "orderTopic": {
+            "name": "ORDER_TOPIC",
+            "routingKey": [
+                "invoice.*"
+            ],
+            "type": "exchange"
+        }
     }
 }

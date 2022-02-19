@@ -1,7 +1,7 @@
 import { Channel } from 'amqplib';
 import { Db } from 'mongodb';
 import { Express } from 'express';
-import { EventHandler } from '../common/infrastructure/EventHandler';
+import { Handler } from '../common/infrastructure/Handler';
 import { InvoiceService } from './application/InvoiceService';
 import { errorHandler } from '../common/domain/ErrorHandler';
 import { InvoiceRepository } from './infrastructure/InvoiceRepository';
@@ -11,10 +11,11 @@ import { OrderService } from './application/OrderService';
 import { AccountService } from './application/AccountService';
 import { AxiosHttpClient } from '../common/infrastructure/AxiosHttpClient';
 import { AccountRepository } from './infrastructure/AccountRepository';
+import { exchange } from './config.json';
 
 export function routes(app: Express, channel: Channel, db: Db): void {
 
-    const eventHandler = new EventHandler(channel);
+    const handler = new Handler(channel, exchange);
     const invoiceRepository = new InvoiceRepository(db);
     const accountRepository = new AccountRepository(db);
     const httpClient = new AxiosHttpClient();
@@ -22,7 +23,7 @@ export function routes(app: Express, channel: Channel, db: Db): void {
     const orderService = new OrderService(httpClient);
     const accountService = new AccountService(accountRepository);
     const invoiceService = new InvoiceService(invoiceRepository, reservationService, orderService, accountService);
-    const invoiceResource = new InvoiceResource(eventHandler, invoiceService);
+    const invoiceResource = new InvoiceResource(handler, invoiceService);
 
     app.post('/payments', async (req, res, next) => {
         try {

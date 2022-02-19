@@ -1,5 +1,5 @@
 import { Delivery } from "../../common/domain/Delivery";
 
 export interface IDeliveryRepository {
-    insert(delivery: Delivery):Promise<void>;
-} 
+    insert(delivery: Delivery): Promise<void>;
+}

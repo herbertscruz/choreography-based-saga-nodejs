@@ -3,8 +3,10 @@ import { IHttpClient } from "../../common/application/IHttpClient";
 import { Order } from '../../common/domain/Order';
 
 export class OrderService {
-    
-    constructor(private client: IHttpClient<Order>) {}
+
+    constructor(
+        private client: IHttpClient<Order>
+    ) { }
 
     async findById(id: ObjectId): Promise<Order> {
         const url = new URL(`/orders/${id.toString()}`, 'http://localhost:3000');

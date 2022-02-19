@@ -3,13 +3,14 @@ process.stdin.resume();
 console.log('Starting payment handler...');
 console.log('--------------------------------------------------');
 
-import { rabbitmq, mongo, api }  from './config.json';
+import { rabbitmq, mongo, api } from './config.json';
 import amqplib from 'amqplib';
 import { MongoClient, MongoClientOptions } from 'mongodb';
 import express from 'express';
-import bodyParser = require('body-parser');
+import bodyParser from 'body-parser';
 import { routes } from './routes';
 import { migrations } from './migrations';
+import { consumers } from './consumers';
 
 let rabbitMQConnection;
 let mongoDBConnection;
@@ -39,6 +40,11 @@ let mongoDBConnection;
     routes(app, channel, db);
 
     app.listen(api.port, () => console.log('Listen port %s', api.port));
+
+    // ---------------------------------------------------------------------------------
+    // --- Event handler
+    // ---------------------------------------------------------------------------------
+    await consumers(channel);
 })();
 
 // ---------------------------------------------------------------------------------

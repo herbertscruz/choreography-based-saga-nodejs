@@ -3,8 +3,10 @@ import { IHttpClient } from "../../common/application/IHttpClient";
 import { Product } from '../../common/domain/Product';
 
 export class ProductService {
-    
-    constructor(private client: IHttpClient<Product>) {}
+
+    constructor(
+        private client: IHttpClient<Product>
+    ) { }
 
     async findById(id: ObjectId): Promise<Product> {
         const url = new URL(`/products/${id.toString()}`, 'http://localhost:3004');

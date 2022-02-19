@@ -1,11 +1,13 @@
 import { get, omit } from "lodash";
-import { ObjectId } from "mongodb";
+import { Db, ObjectId } from "mongodb";
 import { Product } from "../../common/domain/Product";
 import { IProductRepository } from "../application/IProductRepository";
 
 export class ProductRepository implements IProductRepository {
 
-    constructor(private db) { }
+    constructor(
+        private db: Db
+    ) { }
 
     async insert(product: Product): Promise<void> {
         const result = await this.db.collection('product').insertOne(omit(product.getData(), ['id', '_id']));

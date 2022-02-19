@@ -5,8 +5,10 @@ import { EDeliveryStatus } from "../../common/domain/EDeliveryStatus";
 import { omit } from "lodash";
 
 export class DeliveryService {
-    
-    constructor(private repository: IDeliveryRepository) {}
+
+    constructor(
+        private repository: IDeliveryRepository
+    ) { }
 
     async insertAll(reservations: Reservation[]): Promise<void> {
         reservations = reservations.map(e => {

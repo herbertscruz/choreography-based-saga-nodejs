@@ -5,8 +5,11 @@ import { EOrderStatus } from "../../common/domain/EOrderStatus";
 import { ProductService } from "./ProductService";
 
 export class OrderService {
-    
-    constructor(private orderRepository: IOrderRepository, private productService: ProductService) {}
+
+    constructor(
+        private orderRepository: IOrderRepository,
+        private productService: ProductService
+    ) { }
 
     async createWithPendingStatus(order: Order): Promise<Order> {
         order.validate({
@@ -45,4 +48,5 @@ export class OrderService {
 
         return order;
     }
+
 }

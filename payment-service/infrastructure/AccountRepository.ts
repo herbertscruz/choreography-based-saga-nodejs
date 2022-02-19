@@ -1,11 +1,13 @@
 import { get, omit } from "lodash";
-import { ObjectId } from "mongodb";
+import { Db, ObjectId } from "mongodb";
 import { Account } from "../../common/domain/Account";
 import { IAccountRepository } from "../application/IAccountRepository";
 
 export class AccountRepository implements IAccountRepository {
 
-    constructor(private db) { }
+    constructor(
+        private db: Db
+    ) { }
 
     async insert(account: Account): Promise<void> {
         const result = await this.db.collection('account').insertOne(omit(account.getData(), ['id', '_id']));
@@ -13,7 +15,7 @@ export class AccountRepository implements IAccountRepository {
     }
 
     async findByCustomer(customerId: ObjectId): Promise<Account> {
-        const result = await this.db.collection('account').findOne({customerId});
+        const result = await this.db.collection('account').findOne({ customerId });
         if (!result) return null;
         return Account.toEntity(result);
     }

@@ -1,10 +1,13 @@
 import { get, omit } from "lodash";
+import { Db } from "mongodb";
 import { Customer } from "../../common/domain/Customer";
 import { ICustomerRepository } from "../application/ICustomerRepository";
 
 export class CustomerRepository implements ICustomerRepository {
 
-    constructor(private db) { }
+    constructor(
+        private db: Db
+    ) { }
 
     async insert(customer: Customer): Promise<void> {
         const result = await this.db.collection('customer').insertOne(omit(customer.getData(), ['id', '_id']));

@@ -37,8 +37,8 @@ export class InvoiceService {
         const account = await this.accountService.findByCustomer(customerId);
 
         const invoiceResult = await this.invoiceRepository.findByAccountFromOrderWithSuccessStatus(account.id as ObjectId, orderId);
-        if (invoiceResult) throw new ValidatorError({message: 'The order cannot be paid for more than once'});
-        
+        if (invoiceResult) throw new ValidatorError({ message: 'The order cannot be paid for more than once' });
+
         const reservations = await this.reservationService.findByOrder(orderId as ObjectId);
         const order = await this.orderService.findById(orderId as ObjectId);
 
@@ -50,7 +50,7 @@ export class InvoiceService {
             reason = 'Out of stock';
         } else {
             const totalOrder = order.items.reduce((result, item) => result + Number((item.unitPrice * item.quantity).toFixed(4)), 0.0);
-    
+
             if (totalOrder <= account.balance) {
                 status = EInvoiceStatus.SUCCESS;
                 account.balance = Number((account.balance - totalOrder).toFixed(4));

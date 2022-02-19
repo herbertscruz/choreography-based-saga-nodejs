@@ -1,12 +1,14 @@
 import { get, omit } from "lodash";
 import { IInvoiceRepository } from "../application/IInvoiceRepository";
 import { Invoice } from "../../common/domain/Invoice";
-import { ObjectId } from "mongodb";
+import { Db, ObjectId } from "mongodb";
 import { EInvoiceStatus } from "../../common/domain/EInvoiceStatus";
 
 export class InvoiceRepository implements IInvoiceRepository {
 
-    constructor(private db) { }
+    constructor(
+        private db: Db
+    ) { }
 
     async insert(invoice: Invoice): Promise<void> {
         const result = await this.db.collection('invoice').insertOne(omit(invoice.getData(), ['id', '_id']));

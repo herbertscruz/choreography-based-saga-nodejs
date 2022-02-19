@@ -3,7 +3,9 @@ import { EventService } from "./EventService";
 
 export class EventResource {
 
-    constructor(private service: EventService) {}
+    constructor(
+        private service: EventService
+    ) { }
 
     async consumeEvent(message) {
         const payload = JSON.parse(message.content.toString());

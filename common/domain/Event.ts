@@ -6,8 +6,7 @@ export class Event extends AbstractDomain {
 
     private _id: ObjectId;
     private _orderId: ObjectId;
-    public name: string;
-    public service: string;
+    public routingKey: string;
     public metadata: object;
     private _createdAt: number;
 
@@ -50,8 +49,7 @@ export class Event extends AbstractDomain {
         return {
             id: this.id,
             orderId: this.orderId,
-            name: this.name,
-            service: this.service,
+            routingKey: this.routingKey,
             metadata: this.metadata,
             createdAt: this.createdAt
         }
@@ -61,8 +59,7 @@ export class Event extends AbstractDomain {
         const entity = new Event();
         entity.id = get(object, 'id', get(object, '_id'));
         entity.orderId = get(object, 'orderId', get(object, '_orderId'));
-        entity.name = get(object, 'name');
-        entity.service = get(object, 'service');
+        entity.routingKey = get(object, 'routingKey');
         entity.metadata = get(object, 'metadata');
         entity.createdAt = get(object, 'createdAt', get(object, '_createdAt'));
         return entity;

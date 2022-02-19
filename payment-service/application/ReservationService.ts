@@ -4,8 +4,10 @@ import { Reservation } from '../../common/domain/Reservation';
 import { isArray } from "lodash";
 
 export class ReservationService {
-    
-    constructor(private client: IHttpClient<Reservation>) {}
+
+    constructor(
+        private client: IHttpClient<Reservation>
+    ) { }
 
     async findByOrder(orderId: ObjectId): Promise<Reservation[]> {
         const url = new URL(`/reservations?orderId=${orderId.toString()}`, 'http://localhost:3004');

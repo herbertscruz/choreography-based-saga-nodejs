@@ -3,7 +3,7 @@ process.stdin.resume();
 console.log('Starting order handler...');
 console.log('--------------------------------------------------');
 
-import { rabbitmq, mongo, api }  from './config.json';
+import { rabbitmq, mongo, api } from './config.json';
 import amqplib from 'amqplib';
 import { MongoClient, MongoClientOptions } from 'mongodb';
 import express from 'express';

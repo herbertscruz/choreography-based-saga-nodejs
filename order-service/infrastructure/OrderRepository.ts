@@ -1,11 +1,13 @@
 import { get, omit } from "lodash";
-import { ObjectId } from "mongodb";
+import { Db, ObjectId } from "mongodb";
 import { IOrderRepository } from "../application/IOrderRepository";
 import { Order } from "../../common/domain/Order"
 
 export class OrderRepository implements IOrderRepository {
 
-    constructor(private db) { }
+    constructor(
+        private db: Db
+    ) { }
 
     async insert(order: Order): Promise<void> {
         const result = await this.db.collection('order').insertOne(omit(order.getData(), ['id', '_id']));

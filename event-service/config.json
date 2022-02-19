@@ -9,7 +9,9 @@
     "queues": {
         "event": {
             "name": "EVENT_QUEUE",
-            "routingKey": ["#"]
+            "routingKey": [
+                "#"
+            ]
         }
     }
 }
